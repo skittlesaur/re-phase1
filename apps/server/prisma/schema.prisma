@@ -6,3 +6,27 @@ datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+
+model Product {
+  id        String   @id @default(cuid()) @map("_id")
+  name      String
+  price     Float
+  stock     Int
+  category  ProductCategory
+}
+
+model Tool {
+  id        String   @id @default(cuid()) @map("_id")
+  toolType  ToolType
+}
+
+enum ProductCategory {
+  OUTFITS
+  GROCERIES
+  TOOLS
+}
+
+enum ToolType {
+  HAND_TOOL
+  POWER_TOOL
+}

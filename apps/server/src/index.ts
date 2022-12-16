@@ -3,6 +3,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import * as bodyParser from 'body-parser'
 import dotenv from 'dotenv'
+import createProduct from './controllers/products/create'
 
 dotenv.config()
 const PORT = process.env.PORT
@@ -13,6 +14,8 @@ server.use(cors())
 server.use(cookieParser())
 server.use(bodyParser.json())
 server.use(bodyParser.urlencoded({ extended: true }))
+
+server.post('/products', createProduct)
 
 server.get('/', (req: Request, res: Response) => {
   res.send('Hello World')
