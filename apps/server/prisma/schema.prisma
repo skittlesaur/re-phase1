@@ -26,6 +26,14 @@ model Grocery {
   expirationDate DateTime
 }
 
+model User {
+  id       String   @id @default(cuid()) @map("_id")
+  email    String   @unique
+  password String
+  name     String
+  role     UserRole
+}
+
 enum ProductCategory {
   OUTFITS
   GROCERIES
@@ -45,4 +53,10 @@ enum GroceryType {
   BAKING_GOOD
   FROZEN_GOOD
   MEATS
+}
+
+enum UserRole {
+  PRODUCTS_SELLLER
+  CUSTOMER_SERVICE
+  CUSTOMER
 }

@@ -1,0 +1,7 @@
+enum UserRole {
+    PRODUCTS_SELLER = 'PRODUCTS_SELLER',
+    CUSTOMER_SERVICE = 'CUSTOMER_SERVICE',
+    CUSTOMER = 'CUSTOMER',
+}
+
+export default UserRole
