@@ -1,5 +1,5 @@
-import Product from './product'
-import ProductCategory from './product-category'
+import Product from '../product'
+import ProductCategory from '../product-category'
 import ToolType from './tool-type'
 import { PrismaClient } from '@prisma/client'
 
