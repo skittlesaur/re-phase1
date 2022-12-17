@@ -8,16 +8,22 @@ datasource db {
 }
 
 model Product {
-  id        String   @id @default(cuid()) @map("_id")
-  name      String
-  price     Float
-  stock     Int
-  category  ProductCategory
+  id       String          @id @default(cuid()) @map("_id")
+  name     String
+  price    Float
+  stock    Int
+  category ProductCategory
 }
 
 model Tool {
-  id        String   @id @default(cuid()) @map("_id")
-  toolType  ToolType
+  id       String   @id @default(cuid()) @map("_id")
+  toolType ToolType
+}
+
+model Grocery {
+  id             String      @id @default(cuid()) @map("_id")
+  groceryType    GroceryType
+  expirationDate DateTime
 }
 
 enum ProductCategory {
@@ -29,4 +35,14 @@ enum ProductCategory {
 enum ToolType {
   HAND_TOOL
   POWER_TOOL
+}
+
+enum GroceryType {
+  BEVERAGE
+  BAKED_GOOD
+  CANNED_GOOD
+  DAIRY
+  BAKING_GOOD
+  FROZEN_GOOD
+  MEATS
 }
