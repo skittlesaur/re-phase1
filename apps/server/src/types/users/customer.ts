@@ -85,6 +85,43 @@ class Customer extends User {
     return this
   }
 
+  async removeCart(product: Product, quantity: number = 1): Promise<any> {
+    const prisma = new PrismaClient()
+
+    const cartItem = await prisma.cartItem.findFirst({
+      where: {
+        cartId: this.cart?.id,
+        productId: product.id,
+      },
+    })
+
+    if (!cartItem)
+      throw new Error('Product not found in cart')
+
+    if (cartItem.quantity <= quantity) {
+      await prisma.cartItem.delete({
+        where: {
+          id: cartItem.id,
+        },
+      })
+    } else {
+      await prisma.cartItem.update({
+        where: {
+          id: cartItem.id,
+        },
+        data: {
+          quantity: {
+            decrement: quantity,
+          },
+        },
+      })
+    }
+
+    await prisma.$disconnect()
+
+    return this
+  }
+
   async fetchData(): Promise<any> {
     const prisma = new PrismaClient()
 

@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import ProductHelper from '../../../types/products/helper'
 import Customer from '../../../types/users/customer'
 
-const addCart = async (req: Request, res: Response) => {
+const removeCart = async (req: Request, res: Response) => {
   try {
     const user = req.user as Customer
     const { productId, quantity: qt } = req.body
@@ -16,12 +16,12 @@ const addCart = async (req: Request, res: Response) => {
     if (!product)
       throw new Error('Product not found')
 
-    await user.addCart(product, quantity)
+    await user.removeCart(product, quantity)
 
-    res.status(200).json({ message: 'Product added to cart' })
+    res.status(200).json({ message: 'Product removed from cart' })
   } catch (e: any) {
     res.status(400).json({ error: e.message })
   }
 }
 
-export default addCart
+export default removeCart

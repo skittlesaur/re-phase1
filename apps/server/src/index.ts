@@ -12,6 +12,7 @@ import User from './types/users/user'
 import userRole from './middleware/user-role'
 import UserRole from './types/users/user-role'
 import addCart from './controllers/user/customer/add-cart'
+import removeCart from './controllers/user/customer/remove-cart'
 
 dotenv.config()
 const PORT = process.env.PORT
@@ -45,6 +46,7 @@ server.use(authenticatedUserMiddleware)
 
 server.post('/user/customer/purchase', purchase)
 server.post('/user/customer/cart', userRole(UserRole.CUSTOMER), addCart)
+server.delete('/user/customer/cart', userRole(UserRole.CUSTOMER), removeCart)
 
 server.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`)
