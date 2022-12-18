@@ -1,8 +1,8 @@
-import Tool from '../types/tools/tool'
-import ToolType from '../types/tools/tool-type'
-import HandTool from '../types/tools/hand-tool'
+import Tool from '../types/products/tools/tool'
+import ToolType from '../types/products/tools/tool-type'
+import HandTool from '../types/products/tools/hand-tool'
 import IFactory from './ifactory'
-import PowerTool from '../types/tools/power-tool'
+import PowerTool from '../types/products/tools/power-tool'
 
 interface ToolProps {
   name: string

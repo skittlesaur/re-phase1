@@ -2,6 +2,7 @@ import { PrismaClient, UserRole } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import Customer from './customer'
 import User from './user'
+import jwt from 'jsonwebtoken'
 
 class UserHelper {
   static async login(email: string, password: string): Promise<any> {
@@ -100,6 +101,43 @@ class UserHelper {
     userInstance = await userInstance.create()
 
     return userInstance
+  }
+
+  static async authenticate(token: string): Promise<any> {
+    const prisma = new PrismaClient()
+
+    const { id } = this.verifyToken(token) as any
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!user)
+      throw new Error('User not found')
+
+    await prisma.$disconnect()
+
+    let userInstance: User | undefined
+
+    if (user.role === UserRole.CUSTOMER)
+      userInstance = new Customer(user.email, user.password)
+
+    if (!userInstance)
+      throw new Error('Invalid user role')
+
+    userInstance.id = user.id
+    userInstance.email = user.email
+    userInstance.name = user.name ?? undefined
+
+    userInstance = await userInstance.fetchData()
+
+    return userInstance
+  }
+
+  static verifyToken(token: string) {
+    return jwt.verify(token, process.env.JWT_SECRET ?? '')
   }
 }
 

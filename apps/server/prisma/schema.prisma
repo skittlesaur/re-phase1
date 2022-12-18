@@ -18,6 +18,7 @@ model Product {
   PurchaseHistory   PurchaseHistory? @relation(fields: [purchaseHistoryId], references: [id])
   purchaseHistoryId String?
   Review            Review[]
+  CartItem          CartItem[]
 }
 
 model Tool {
@@ -47,10 +48,20 @@ model Customer {
 }
 
 model Cart {
-  id         String    @id @default(cuid()) @map("_id")
-  customerId String    @unique
-  customer   Customer  @relation(fields: [customerId], references: [id])
-  products   Product[]
+  id         String     @id @default(cuid()) @map("_id")
+  customerId String     @unique
+  customer   Customer   @relation(fields: [customerId], references: [id])
+  cartItems  CartItem[]
+  Product    Product[]
+}
+
+model CartItem {
+  id        String  @id @default(cuid()) @map("_id")
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int     @default(1)
 }
 
 model PurchaseHistory {

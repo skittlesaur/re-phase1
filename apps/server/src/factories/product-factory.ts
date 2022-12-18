@@ -1,4 +1,4 @@
-import ProductCategory from '../types/product-category'
+import ProductCategory from '../types/products/product-category'
 import GroceryFactory from './grocery-factory'
 import IFactory from './ifactory'
 import ToolFactory from './tool-factory'

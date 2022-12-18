@@ -1,13 +1,13 @@
 import IFactory from './ifactory';
-import GroceryType from '../types/groceries/grocery-type';
-import Grocery from '../types/groceries/grocery';
-import Beverage from '../types/groceries/beverage';
-import BakedGood from '../types/groceries/baked-good';
-import CannedGood from '../types/groceries/canned-good';
-import Dairy from '../types/groceries/dairy';
-import BakingGood from '../types/groceries/baking-good';
-import FrozenGood from '../types/groceries/frozen-good';
-import Meat from '../types/groceries/meat';
+import GroceryType from '../types/products/groceries/grocery-type';
+import Grocery from '../types/products/groceries/grocery';
+import Beverage from '../types/products/groceries/beverage';
+import BakedGood from '../types/products/groceries/baked-good';
+import CannedGood from '../types/products/groceries/canned-good';
+import Dairy from '../types/products/groceries/dairy';
+import BakingGood from '../types/products/groceries/baking-good';
+import FrozenGood from '../types/products/groceries/frozen-good';
+import Meat from '../types/products/groceries/meat';
 
 
 interface GroceryProps {

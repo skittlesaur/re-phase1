@@ -1,4 +1,4 @@
-import Product from '../types/product'
+import Product from '../types/products/product'
 
 interface IFactory {
   create(type: string, props: any): any;
