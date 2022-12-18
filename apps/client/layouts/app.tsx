@@ -1,13 +1,15 @@
 import { ReactNode } from 'react'
+import Nav from '@components/nav'
 
 interface AppProps {
   children: ReactNode
+  currentPage: 'home' | 'contact'
 }
 
-const AppLayout = ({ children }: AppProps) => {
+const AppLayout = ({ children, currentPage }: AppProps) => {
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-50 w-full h-screen flex items-center justify-center">
-      {children}
+    <div className="min-h-screen">
+      <Nav currentPage={currentPage} />
     </div>
   )
 }

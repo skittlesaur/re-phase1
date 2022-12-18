@@ -4,7 +4,7 @@ import SEO from 'ui/seo'
 
 const HomePage = () => {
   return (
-    <AppLayout>
+    <AppLayout currentPage="home">
       <SEO
         title="baraa.app"
       />
