@@ -44,7 +44,10 @@ const Nav = ({ currentPage, search, isSearching }: NavProps) => {
     <header className="sticky top-0 backdrop-blur border-b border-gray-200">
       {isSearchActive && (
         <div
-          onClick={() => setIsSearchActive(false)}
+          onClick={() => {
+            setIsSearchActive(false)
+            search('')
+          }}
           className="z-[-1] fixed top-0 w-full h-screen"
         />
       )}
