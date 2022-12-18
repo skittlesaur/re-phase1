@@ -148,6 +148,74 @@ class Customer extends User {
     return this
   }
 
+  async purchase() {
+    const prisma = new PrismaClient()
+
+    const cart = await prisma.cart.findUnique({
+      where: {
+        id: this.cart?.id ?? '',
+      },
+      include: {
+        cartItems: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    })
+
+    if (!cart)
+      throw new Error('Cart not found')
+
+    let total = 0
+    for (const cartItem of cart.cartItems) {
+      if (cartItem.product.stock < cartItem.quantity)
+        throw new Error(`Product ${cartItem.product.name} has insufficient stock`)
+
+      total += cartItem.product.price * cartItem.quantity
+    }
+
+    const purchaseHistory = await prisma.purchaseHistory.create({
+      data: {
+        id: generateId(),
+        total,
+        customer: {
+          connect: {
+            id: this.id,
+          }
+        },
+        cart: {
+          connect: {
+            id: cart.id,
+          }
+        }
+      }
+    })
+
+    for (const cartItem of cart.cartItems) {
+      await prisma.product.update({
+        where: {
+          id: cartItem.product.id,
+        },
+        data: {
+          stock: {
+            decrement: cartItem.quantity,
+          },
+        },
+      })
+    }
+
+    await prisma.cart.delete({
+      where: {
+        id: cart.id,
+      }
+    })
+
+    await prisma.$disconnect()
+
+    return purchaseHistory
+  }
+
   async create(): Promise<any> {
     const prisma = new PrismaClient()
 
