@@ -30,7 +30,7 @@ model User {
   id       String   @id @default(cuid()) @map("_id")
   email    String   @unique
   password String
-  name     String
+  name     String?
   role     UserRole
 }
 
