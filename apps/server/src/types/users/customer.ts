@@ -208,6 +208,122 @@ class Customer extends User {
     return purchaseHistory
   }
 
+  async viewOwnComplaints(): Promise<any> {
+    const prisma = new PrismaClient()
+
+    const complaints = await prisma.complaint.findMany({
+      where: {
+        id: this.id,
+      },
+      select: {
+        date: true,
+        title: true,
+        status: true,
+        author: {
+          select: {
+            email: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        date: 'desc'
+      },
+    })
+
+    return complaints
+
+  }
+
+  async viewComplaint(complaintId: string): Promise<any> {
+    const prisma = new PrismaClient()
+
+    const complaint = await prisma.complaint.findUnique({
+      where: {
+        id: complaintId,
+      },
+      select: {
+        title: true,
+        text: true,
+        date: true,
+        status: true,
+        author: {
+          select: {
+            email: true,
+            name: true,
+          }
+        },
+        replies: {
+          select: {
+            text: true,
+            date: true,
+            author: {
+              select: {
+                email: true,
+                name: true,
+              },
+            },
+          },
+          orderBy: {
+            date: 'desc'
+          },
+        },
+      },
+    })
+
+    if (!complaint)
+      throw new Error('Cannot find this complaint')
+
+    return complaint
+  }
+
+  async writeComplaint(title: string, text: string): Promise<any> {
+    const prisma = new PrismaClient();
+
+    const complaint = await prisma.complaint.create({
+      data: {
+        title: title,
+        text: text,
+        status: false, //false means it has not been solved yet
+        author: {
+          connect: {
+            id: this.id,
+          },
+        },
+      },
+    });
+
+    if (!complaint)
+      throw new Error("reply creation failed");
+
+    return complaint;
+  }
+
+  async writeReply(text: string, complaintId: string): Promise<any> {
+    const prisma = new PrismaClient()
+
+    const reply = await prisma.reply.create({
+      data: {
+        text: text,
+        author: {
+          connect: {
+            id: this.id,
+          },
+        },
+        complaint: {
+          connect: {
+            id: complaintId
+          },
+        },
+      },
+    })
+
+    if (!reply)
+      throw new Error('reply creation failed')
+
+    return reply
+  }
+
   async create(): Promise<any> {
     const prisma = new PrismaClient()
 
