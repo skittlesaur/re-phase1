@@ -44,7 +44,7 @@ server.post('/user/register', register)
 // authenticated user
 server.use(authenticatedUserMiddleware)
 
-server.post('/user/customer/purchase', purchase)
+server.post('/user/customer/purchase', userRole(UserRole.CUSTOMER), purchase)
 server.post('/user/customer/cart', userRole(UserRole.CUSTOMER), addCart)
 server.delete('/user/customer/cart', userRole(UserRole.CUSTOMER), removeCart)
 

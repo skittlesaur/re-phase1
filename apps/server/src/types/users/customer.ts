@@ -182,14 +182,14 @@ class Customer extends User {
         customer: {
           connect: {
             id: this.id,
-          }
+          },
         },
         cart: {
           connect: {
             id: cart.id,
-          }
-        }
-      }
+          },
+        },
+      },
     })
 
     for (const cartItem of cart.cartItems) {
@@ -208,7 +208,7 @@ class Customer extends User {
     await prisma.cart.delete({
       where: {
         id: cart.id,
-      }
+      },
     })
 
     await prisma.$disconnect()
