@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 import Customer from './customer'
 import User from './user'
 import jwt from 'jsonwebtoken'
+import CustomerService from './customer-service';
 
 class UserHelper {
   static async login(email: string, password: string): Promise<any> {
@@ -87,6 +88,9 @@ class UserHelper {
     if (role === UserRole.CUSTOMER)
       userInstance = new Customer(email, password, name)
 
+    if (role === UserRole.CUSTOMER_SERVICE)
+      userInstance = new CustomerService(email, password, name)
+
     if (!userInstance)
       throw new Error('Invalid user role')
 
@@ -117,6 +121,9 @@ class UserHelper {
 
     if (user.role === UserRole.CUSTOMER)
       userInstance = new Customer(user.email, user.password)
+
+    if (user.role === UserRole.CUSTOMER_SERVICE)
+      userInstance = new CustomerService(user.email, user.password)
 
     if (!userInstance)
       throw new Error('Invalid user role')
