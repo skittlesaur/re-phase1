@@ -26,23 +26,18 @@ const Product = ({ product }: any) => {
     retry: 0,
   })
 
-  const handleAddToCart = async (id: string) => {
+  const handleAddToCart = (id: string) => {
     if (addToCart.isLoading) return
-    try {
-      if (user) {
-        await addToCart.mutateAsync(id)
-      } else {
-        toast.error('Please login to add to cart')
-      }
-    } catch (e) {
-      console.log(e)
+    if (user) {
+      addToCart.mutate(id)
+    } else {
+      toast.error('Please login to add to cart')
     }
   }
 
   return (
     <div
       key={product.id}
-      onClick={() => handleAddToCart(product.id)}
       className="flex bg-gray-50 pl-4 pr-2 py-2 rounded-lg border border-gray-200 hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out"
     >
       <div className="flex flex-col gap-1 grow">
@@ -60,11 +55,7 @@ const Product = ({ product }: any) => {
       </div>
       <button
         disabled={addToCart.isLoading}
-        onClick={async (e) => {
-          e.preventDefault()
-          e.stopPropagation()
-          await handleAddToCart(product.id)
-        }}
+        onClick={() => handleAddToCart(product.id)}
         className="w-7 hover:scale-110 aspect-square self-end justify-self-end transition-all duration-200 ease-in-out"
       >
         {!addToCart.isLoading && <AddCircleIcon key="add" className="fill-current" />}
