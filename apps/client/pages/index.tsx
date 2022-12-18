@@ -7,7 +7,7 @@ const HomePage = ({ products }: any) => {
   return (
     <AppLayout currentPage="home">
       <SEO
-        title="baraa.app"
+        title="factory - Home"
       />
       <Home products={products} />
     </AppLayout>
