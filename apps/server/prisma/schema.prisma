@@ -8,11 +8,16 @@ datasource db {
 }
 
 model Product {
-  id       String          @id @default(cuid()) @map("_id")
-  name     String
-  price    Float
-  stock    Int
-  category ProductCategory
+  id                String           @id @default(cuid()) @map("_id")
+  name              String
+  price             Float
+  stock             Int
+  category          ProductCategory
+  Cart              Cart?            @relation(fields: [cartId], references: [id])
+  cartId            String?
+  PurchaseHistory   PurchaseHistory? @relation(fields: [purchaseHistoryId], references: [id])
+  purchaseHistoryId String?
+  Review            Review[]
 }
 
 model Tool {
@@ -32,6 +37,38 @@ model User {
   password String
   name     String?
   role     UserRole
+}
+
+model Customer {
+  id              String            @id @default(cuid()) @map("_id")
+  cart            Cart?
+  purchaseHistory PurchaseHistory[]
+  reviews         Review[]
+}
+
+model Cart {
+  id         String    @id @default(cuid()) @map("_id")
+  customerId String    @unique
+  customer   Customer  @relation(fields: [customerId], references: [id])
+  products   Product[]
+}
+
+model PurchaseHistory {
+  id         String    @id @default(cuid()) @map("_id")
+  customerId String
+  customer   Customer  @relation(fields: [customerId], references: [id])
+  products   Product[]
+  total      Float
+}
+
+model Review {
+  id         String   @id @default(cuid()) @map("_id")
+  customer   Customer @relation(fields: [customerId], references: [id])
+  product    Product  @relation(fields: [productId], references: [id])
+  rating     Int
+  comment    String
+  customerId String
+  productId  String
 }
 
 enum ProductCategory {

@@ -1,24 +1,9 @@
-import generateId from '../lib/generate-id'
 import { PrismaClient, UserRole } from '@prisma/client'
 import bcrypt from 'bcrypt'
+import Customer from './customer'
+import User from './user'
 
-abstract class User {
-  id: string
-  email: string
-  password: string
-  name: string
-  role: UserRole
-
-  constructor(email: string, password: string, name: string, role: UserRole) {
-    this.id = generateId()
-    this.email = email
-    this.password = password
-    this.name = name
-    this.role = role
-  }
-
-  abstract createRecord(): any
-
+class UserHelper {
   static async login(email: string, password: string): Promise<any> {
     const prisma = new PrismaClient()
 
@@ -44,12 +29,25 @@ abstract class User {
 
     await prisma.$disconnect()
 
-    const { password: pass, ...userWithoutPassword } = user
+    let userInstance: User | undefined
 
-    return userWithoutPassword
+    if (user.role === UserRole.CUSTOMER)
+      userInstance = new Customer(email, password)
+
+    if (!userInstance)
+      throw new Error('Invalid user role')
+
+
+    userInstance.id = user.id
+    userInstance.email = user.email
+    userInstance.name = user.name ?? undefined
+
+    userInstance = await userInstance.fetchData()
+
+    return userInstance
   }
 
-  static async register(email: string, password: string, name?: string, userRole?: UserRole): Promise<any> {
+  static async register(role: UserRole, email: string, password: string, name?: string): Promise<any> {
     const prisma = new PrismaClient()
 
     if (!email)
@@ -67,32 +65,42 @@ abstract class User {
     if (password.length < 8)
       throw new Error('Password must be at least 8 characters long')
 
-    const user = await prisma.user.findUnique({
+    const userExists = await prisma.user.findUnique({
       where: {
         email,
       },
     })
 
-    if (user)
+    if (userExists)
       throw new Error('User already exists')
 
-    const hashedPassword = await bcrypt.hash(password, 10)
-
-    const newUser = await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email,
-        password: hashedPassword,
+        password: bcrypt.hashSync(password, 10),
         name,
-        role: userRole ?? UserRole.CUSTOMER,
+        role,
       },
     })
 
     await prisma.$disconnect()
 
-    const { password: pass, ...userWithoutPassword } = newUser
+    let userInstance: User | undefined
 
-    return userWithoutPassword
+    if (role === UserRole.CUSTOMER)
+      userInstance = new Customer(email, password, name)
+
+    if (!userInstance)
+      throw new Error('Invalid user role')
+
+    userInstance.id = user.id
+    userInstance.email = user.email
+    userInstance.name = user.name ?? undefined
+
+    userInstance = await userInstance.create()
+
+    return userInstance
   }
 }
 
-export default User
+export default UserHelper

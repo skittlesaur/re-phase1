@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
-import User from '../../types/user'
+import User from '../../types/users/user'
+import UserFactory from '../../factories/user-factory'
+import UserHelper from '../../types/users/helper'
 
 const register = async (req: Request, res: Response) => {
   try {
@@ -11,9 +13,14 @@ const register = async (req: Request, res: Response) => {
     if (!password)
       throw new Error('Password is required')
 
-    const user = await User.register(email, password, name, role)
+    const user = await UserHelper.register(role?.toUpperCase() ?? 'CUSTOMER', email, password, name)
 
-    res.status(200).json(user)
+    const token = user.generateToken()
+
+    res.cookie('token', token, { httpOnly: true })
+
+    const { password: _, ...userWithoutPassword } = user
+    res.status(200).json(userWithoutPassword)
   } catch (e: any) {
     res.status(400).json({ error: e.message })
   }
