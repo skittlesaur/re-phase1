@@ -13,6 +13,7 @@ import userRole from './middleware/user-role'
 import UserRole from './types/users/user-role'
 import addCart from './controllers/user/customer/add-cart'
 import removeCart from './controllers/user/customer/remove-cart'
+import searchProducts from './controllers/products/search'
 
 dotenv.config()
 const PORT = process.env.PORT
@@ -37,6 +38,7 @@ server.get('/', (req: Request, res: Response) => {
 })
 
 server.post('/products', createProduct)
+server.post('/products/search', searchProducts)
 
 server.post('/user/login', login)
 server.post('/user/register', register)
