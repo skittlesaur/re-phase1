@@ -1,8 +1,11 @@
 import Link from 'next/link'
 import SearchIcon from '@icons/search.svg'
+import CartIcon from '@icons/cart.svg'
 import PersonIcon from '@icons/person.svg'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import useUser from '@hooks/use-user'
+import useCart from '@hooks/use-cart'
 
 const pages = [
   {
@@ -21,6 +24,19 @@ interface NavProps {
 
 const Nav = ({ currentPage }: NavProps) => {
   const [isSearchActive, setIsSearchActive] = useState(false)
+  const { user } = useUser()
+  const { cart } = useCart()
+
+  const countItems = useMemo(() => {
+    if (!cart) return 0
+    let count = 0
+
+    cart.cartItems.forEach((item: any) => {
+      count += item.quantity
+    })
+
+    return count
+  }, [cart])
 
   return (
     <header className="sticky top-0 backdrop-blur border-b border-gray-200">
@@ -49,8 +65,8 @@ const Nav = ({ currentPage }: NavProps) => {
               ))}
             </ul>
           </nav>
-          <div className="flex items-center gap-1.5">
-            <div className="relative min-w-[1.5rem]">
+          <div className="flex items-center gap-1">
+            <div className="relative min-w-[1.5rem] min-h-[1.5rem]">
               <AnimatePresence mode="wait">
                 {isSearchActive && (
                   <motion.input
@@ -70,17 +86,66 @@ const Nav = ({ currentPage }: NavProps) => {
               <button
                 onClick={() => setIsSearchActive(!isSearchActive)}
                 disabled={isSearchActive}
-                className="absolute left-1 top-1/2 -translate-y-1/2 text-gray-500 w-6 p-1 rounded-full hover:bg-gray-200 aspect-square transition-all duration-200 ease-in-out disabled:hover:bg-inherit"
+                className={`absolute ${isSearchActive ? 'left-1' : 'left-0'} top-1/2 -translate-y-1/2 text-gray-500 w-6 p-1 rounded-full hover:bg-gray-200 aspect-square transition-all duration-200 ease-in-out disabled:hover:bg-inherit`}
               >
                 <SearchIcon className="fill-current" />
               </button>
             </div>
-            <Link
-              href="/login"
-              className="text-gray-500 w-7 p-1.5 rounded-full hover:bg-gray-200 aspect-square transition-all duration-200 ease-in-out"
-            >
-              <PersonIcon className="fill-current" />
-            </Link>
+            {user?.role === 'CUSTOMER' && (
+              <Link
+                href="/cart"
+                className="group relative text-gray-500 w-7 p-1.5 rounded-full hover:bg-gray-200 aspect-square transition-all duration-200 ease-in-out"
+              >
+                {countItems > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 group-hover:text-black rounded-full w-4 flex items-center justify-center aspect-square text-xs transition-all duration-200 ease-in-out">
+                    {countItems}
+                  </span>
+                )}
+                <CartIcon className="fill-current" />
+              </Link>
+            )}
+            {user ? (
+              <div className="relative group">
+                <div className="text-gray-500 w-7 p-1.5 rounded-full aspect-square transition-all duration-200 ease-in-out">
+                  <PersonIcon className="fill-current" />
+                </div>
+                <div className="group-hover:block hidden absolute top-full right-0 pt-2.5">
+                  <div className="w-40 py-2 bg-white rounded border border-gray-300 shadow-md flex flex-col">
+                    <Link
+                      className="w-full px-4 text-sm py-2 hover:bg-gray-100"
+                      href="/profile"
+                    >
+                      Profile
+                    </Link>
+                    <Link
+                      className="w-full px-4 text-sm py-2 hover:bg-gray-100"
+                      href="/history"
+                    >
+                      Orders
+                    </Link>
+                    <Link
+                      className="w-full px-4 text-sm py-2 hover:bg-gray-100"
+                      href="/reviews"
+                    >
+                      Reviews
+                    </Link>
+                    <Link
+                      className="w-full px-4 text-sm py-2 hover:bg-gray-100"
+                      href="/signout"
+                    >
+                      Sign Out
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="text-gray-500 w-7 p-1.5 rounded-full hover:bg-gray-200 aspect-square transition-all duration-200 ease-in-out"
+              >
+                <PersonIcon className="fill-current" />
+              </Link>
+            )}
           </div>
         </div>
       </div>

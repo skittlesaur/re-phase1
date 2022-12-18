@@ -28,8 +28,6 @@ class UserHelper {
     if (!isPasswordCorrect)
       throw new Error('Incorrect password')
 
-    await prisma.$disconnect()
-
     let userInstance: User | undefined
 
     if (user.role === UserRole.CUSTOMER)
@@ -84,8 +82,6 @@ class UserHelper {
       },
     })
 
-    await prisma.$disconnect()
-
     let userInstance: User | undefined
 
     if (role === UserRole.CUSTOMER)
@@ -116,8 +112,6 @@ class UserHelper {
 
     if (!user)
       throw new Error('User not found')
-
-    await prisma.$disconnect()
 
     let userInstance: User | undefined
 

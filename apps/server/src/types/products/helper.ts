@@ -16,8 +16,6 @@ class ProductHelper {
       },
     })
 
-    await prisma.$disconnect()
-
     if (!product)
       throw new Error('Product not found')
 
@@ -54,6 +52,55 @@ class ProductHelper {
     productInstance = await productInstance.fetchData()
 
     return productInstance
+  }
+
+  static async getProducts() {
+    const prisma = new PrismaClient()
+
+    const products = await prisma.product.findMany()
+
+    const productInstances: Product[] = []
+
+    for (const product of products) {
+      let productInstance: Product | undefined
+
+      if (product.category === ProductCategory.TOOLS) {
+        const tool = await prisma.tool.findUnique({
+          where: {
+            id: product.id,
+          },
+          select: {
+            toolType: true,
+          },
+        })
+
+        if (!tool)
+          throw new Error('Tool not found')
+
+        if (tool.toolType === ToolType.HAND_TOOL)
+          productInstance = new HandTool(product.name, product.price, product.stock)
+        else if (tool.toolType === ToolType.POWER_TOOL)
+          productInstance = new PowerTool(product.name, product.price, product.stock)
+      }
+
+      if (!productInstance)
+        throw new Error('Invalid product category')
+
+      productInstance.id = product.id
+      productInstance.name = product.name
+      productInstance.price = product.price
+      productInstance.category = product.category as ProductCategory
+      productInstance.stock = product.stock
+
+      productInstance = await productInstance.fetchData()
+
+      if (!productInstance)
+        throw new Error('Invalid product category')
+
+      productInstances.push(productInstance)
+    }
+
+    return productInstances
   }
 
   static async search(query: string) {
@@ -126,8 +173,6 @@ class ProductHelper {
 
       productInstances.push(productInstance)
     }
-
-    await prisma.$disconnect()
 
     return productInstances
   }

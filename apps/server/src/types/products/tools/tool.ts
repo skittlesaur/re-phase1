@@ -33,8 +33,6 @@ abstract class Tool extends Product {
 
     await Promise.all([toolPromise, productPromise])
 
-    await prisma.$disconnect()
-
     return this
   }
 
@@ -49,8 +47,6 @@ abstract class Tool extends Product {
         toolType: true,
       },
     })
-
-    await prisma.$disconnect()
 
     if (!tool)
       throw new Error('Tool not found')

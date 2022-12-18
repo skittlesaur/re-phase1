@@ -80,8 +80,6 @@ class Customer extends User {
       })
     }
 
-    await prisma.$disconnect()
-
     return this
   }
 
@@ -117,8 +115,6 @@ class Customer extends User {
       })
     }
 
-    await prisma.$disconnect()
-
     return this
   }
 
@@ -135,8 +131,6 @@ class Customer extends User {
         reviews: true,
       },
     })
-
-    await prisma.$disconnect()
 
     if (!customer)
       throw new Error('User is not a customer')
@@ -211,8 +205,6 @@ class Customer extends User {
       },
     })
 
-    await prisma.$disconnect()
-
     return purchaseHistory
   }
 
@@ -224,8 +216,6 @@ class Customer extends User {
         id: this.id,
       },
     })
-
-    await prisma.$disconnect()
 
     return this
   }

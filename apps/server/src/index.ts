@@ -14,13 +14,20 @@ import UserRole from './types/users/user-role'
 import addCart from './controllers/user/customer/add-cart'
 import removeCart from './controllers/user/customer/remove-cart'
 import searchProducts from './controllers/products/search'
+import getAllProducts from './controllers/products/get-all'
+import verify from './controllers/user/verify'
+import getUser from './controllers/user/get-user'
+import cart from './controllers/user/customer/cart'
 
 dotenv.config()
 const PORT = process.env.PORT
 
 const server = express()
 
-server.use(cors())
+server.use(cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true,
+}))
 server.use(cookieParser())
 server.use(bodyParser.json())
 server.use(bodyParser.urlencoded({ extended: true }))
@@ -37,6 +44,7 @@ server.get('/', (req: Request, res: Response) => {
   res.send('Hello World')
 })
 
+server.get('/products', getAllProducts)
 server.post('/products', createProduct)
 server.post('/products/search', searchProducts)
 
@@ -45,8 +53,10 @@ server.post('/user/register', register)
 
 // authenticated user
 server.use(authenticatedUserMiddleware)
-
+server.get('/user', getUser)
+server.get('/user/verify', verify)
 server.post('/user/customer/purchase', userRole(UserRole.CUSTOMER), purchase)
+server.get('/user/customer/cart', userRole(UserRole.CUSTOMER), cart)
 server.post('/user/customer/cart', userRole(UserRole.CUSTOMER), addCart)
 server.delete('/user/customer/cart', userRole(UserRole.CUSTOMER), removeCart)
 
