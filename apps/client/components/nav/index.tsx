@@ -71,7 +71,7 @@ const Nav = ({ currentPage = 'other', search = () => {}, isSearching = false }: 
             </ul>
           </nav>
           <div className="flex items-center gap-1">
-            {currentPage !== 'other' && (
+            {currentPage === 'home' && (
               <div className="relative min-w-[1.5rem] min-h-[1.5rem]">
                 <AnimatePresence mode="wait">
                   {isSearchActive && (
