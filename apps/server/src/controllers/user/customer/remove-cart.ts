@@ -4,7 +4,7 @@ import Customer from '../../../types/users/customer'
 
 const removeCart = async (req: Request, res: Response) => {
   try {
-    const user = req.user as Customer
+    const user = req?.user as Customer
     const { productId, quantity: qt } = req.body
     const quantity = qt ?? 1
 

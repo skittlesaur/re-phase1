@@ -21,7 +21,7 @@ const Authentication = () => {
     return (
       <div>
         <Login></Login>
-        <h1>Don't have an Account? </h1>
+        <h1>Don&apos;t have an Account? </h1>
         <button onClick={() => setRegistered(!registered)}>
           Register now!
         </button>

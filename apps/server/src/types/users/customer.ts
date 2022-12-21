@@ -2,11 +2,12 @@ import User from './user'
 import { Cart, PrismaClient, PurchaseHistory, Review, UserRole } from '@prisma/client'
 import Product from '../products/product'
 import generateId from '../../lib/generate-id'
+import cart from '../../controllers/user/customer/cart'
 
 class Customer extends User {
-  cart: Cart
-  purchaseHistory: PurchaseHistory[]
-  reviews: Review[]
+  cart?: Cart
+  purchaseHistory?: PurchaseHistory[]
+  reviews?: Review[]
 
   constructor(email: string, password?: string, name?: string) {
     super(UserRole.CUSTOMER, email, password, name)
@@ -15,7 +16,7 @@ class Customer extends User {
   async addCart(product: Product, quantity: number = 1): Promise<any> {
     const prisma = new PrismaClient()
 
-    const cartExists = await prisma.cart.findUnique({
+    const cartExists = this.cart && await prisma.cart.findUnique({
       where: {
         id: this.cart?.id ?? '',
       },
@@ -35,6 +36,9 @@ class Customer extends User {
 
       this.cart = cart
     }
+
+    if (!this.cart)
+      throw new Error('Cart not found')
 
     const cartHasProduct = await prisma.cart.findFirst({
       where: {
@@ -227,7 +231,7 @@ class Customer extends User {
         },
       },
       orderBy: {
-        date: 'desc'
+        date: 'desc',
       },
     })
 
@@ -251,7 +255,7 @@ class Customer extends User {
           select: {
             email: true,
             name: true,
-          }
+          },
         },
         replies: {
           select: {
@@ -265,7 +269,7 @@ class Customer extends User {
             },
           },
           orderBy: {
-            date: 'desc'
+            date: 'desc',
           },
         },
       },
@@ -278,7 +282,7 @@ class Customer extends User {
   }
 
   async writeComplaint(title: string, text: string): Promise<any> {
-    const prisma = new PrismaClient();
+    const prisma = new PrismaClient()
 
     const complaint = await prisma.complaint.create({
       data: {
@@ -291,12 +295,12 @@ class Customer extends User {
           },
         },
       },
-    });
+    })
 
     if (!complaint)
-      throw new Error("reply creation failed");
+      throw new Error('reply creation failed')
 
-    return complaint;
+    return complaint
   }
 
   async writeReply(text: string, complaintId: string): Promise<any> {
@@ -312,7 +316,7 @@ class Customer extends User {
         },
         complaint: {
           connect: {
-            id: complaintId
+            id: complaintId,
           },
         },
       },
@@ -331,17 +335,17 @@ class Customer extends User {
       data: {
         customer: {
           connect: {
-            id: this.id
-          }
+            id: this.id,
+          },
         },
         product: {
           connect: {
-            id: productId
-          }
+            id: productId,
+          },
         },
         rating: rating,
         comment: comment,
-      }
+      },
     })
 
     if (!review)
