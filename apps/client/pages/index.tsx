@@ -21,21 +21,21 @@ const HomePage = ({ products }: any) => {
         title="factory - Home"
       />
       <Home
-        products={products}
+        products={[]}
         searchResult={mutation.data}
       />
     </AppLayout>
   )
 }
 
-export const getStaticProps = async () => {
-  const { data: products } = await api.get('/products')
-
-  return {
-    props: {
-      products,
-    },
-  }
-}
+// export const getStaticProps = async () => {
+//   const { data: products } = await api.get('/products')
+//
+//   return {
+//     props: {
+//       products,
+//     },
+//   }
+// }
 
 export default HomePage
