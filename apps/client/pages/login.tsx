@@ -1,10 +1,11 @@
 import Authentication from '../components/authentication/index'
+import AppLayout from '@layouts/app'
 
 const LoginPage = () => {
   return (
-    <div>
+    <AppLayout>
       <Authentication />
-    </div>
+    </AppLayout>
   )
 }
 
