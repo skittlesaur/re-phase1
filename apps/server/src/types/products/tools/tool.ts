@@ -33,7 +33,25 @@ abstract class Tool extends Product {
 
     await Promise.all([toolPromise, productPromise])
 
-    await prisma.$disconnect()
+    return this
+  }
+
+  async fetchData(): Promise<any> {
+    const prisma = new PrismaClient()
+
+    const tool = await prisma.tool.findUnique({
+      where: {
+        id: this.id,
+      },
+      select: {
+        toolType: true,
+      },
+    })
+
+    if (!tool)
+      throw new Error('Tool not found')
+
+    this.toolType = tool.toolType as ToolType
 
     return this
   }

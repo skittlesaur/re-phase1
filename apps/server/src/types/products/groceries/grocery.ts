@@ -36,8 +36,6 @@ abstract class Grocery extends Product {
 
         await Promise.all([groceryPromise, productPromise])
 
-        await prisma.$disconnect()
-
         return this
 
     }

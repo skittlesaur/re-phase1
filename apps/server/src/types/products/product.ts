@@ -1,5 +1,5 @@
 import ProductCategory from './product-category'
-import generateId from '../lib/generate-id'
+import generateId from '../../lib/generate-id'
 
 abstract class Product {
   id: string
@@ -21,6 +21,7 @@ abstract class Product {
   }
 
   abstract createRecord(): any
+  abstract fetchData(): Promise<any>
 }
 
 export default Product

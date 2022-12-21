@@ -8,16 +8,15 @@ datasource db {
 }
 
 model Product {
-  id                String           @id @default(cuid()) @map("_id")
-  name              String
-  price             Float
-  stock             Int
-  category          ProductCategory
-  Cart              Cart?            @relation(fields: [cartId], references: [id])
-  cartId            String?
-  PurchaseHistory   PurchaseHistory? @relation(fields: [purchaseHistoryId], references: [id])
-  purchaseHistoryId String?
-  Review            Review[]
+  id       String          @id @default(cuid()) @map("_id")
+  name     String
+  price    Float
+  stock    Int
+  category ProductCategory
+  Cart     Cart?           @relation(fields: [cartId], references: [id])
+  cartId   String?
+  Review   Review[]
+  CartItem CartItem[]
 }
 
 model Tool {
@@ -32,32 +31,84 @@ model Grocery {
 }
 
 model User {
-  id       String   @id @default(cuid()) @map("_id")
-  email    String   @unique
-  password String
-  name     String?
-  role     UserRole
+  id              String           @id @default(cuid()) @map("_id")
+  email           String           @unique
+  password        String
+  name            String?
+  role            UserRole
+  customer        Customer?
+  customerService CustomerService?
+  Complaint       Complaint[]
+  Reply           Reply[]
 }
 
 model Customer {
   id              String            @id @default(cuid()) @map("_id")
+  user            User              @relation(fields: [id], references: [id])
   cart            Cart?
   purchaseHistory PurchaseHistory[]
   reviews         Review[]
+  complaints      Complaint[]
+  replies         Reply[]
+}
+
+model CustomerService {
+  id      String  @id @default(cuid()) @map("_id")
+  user    User    @relation(fields: [id], references: [id])
+  replies Reply[]
+}
+
+model Complaint {
+  id         String    @id @default(cuid()) @map("_id")
+  title      String
+  text       String
+  date       DateTime  @default(now())
+  status     Boolean // if it's resolved or not (can only be changed by the cutomer service) could be enum
+  author     User      @relation(fields: [authorId], references: [id]) // customer tht wrote the complaint
+  authorId   String
+  replies    Reply[]
+  Customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?
+}
+
+model Reply {
+  id                String           @id @default(cuid()) @map("_id")
+  text              String
+  date              DateTime         @default(now())
+  author            User             @relation(fields: [authorId], references: [id]) // want it to be customer :/
+  authorId          String
+  complaint         Complaint        @relation(fields: [complaintId], references: [id])
+  complaintId       String
+  Customer          Customer?        @relation(fields: [customerId], references: [id])
+  customerId        String?
+  CustomerService   CustomerService? @relation(fields: [customerServiceId], references: [id])
+  customerServiceId String?
 }
 
 model Cart {
-  id         String    @id @default(cuid()) @map("_id")
-  customerId String    @unique
-  customer   Customer  @relation(fields: [customerId], references: [id])
-  products   Product[]
+  id              String            @id @default(cuid()) @map("_id")
+  customerId      String            @unique
+  customer        Customer          @relation(fields: [customerId], references: [id])
+  cartItems       CartItem[]
+  Product         Product[]
+  PurchaseHistory PurchaseHistory[]
+}
+
+model CartItem {
+  id        String  @id @default(cuid()) @map("_id")
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int     @default(1)
 }
 
 model PurchaseHistory {
-  id         String    @id @default(cuid()) @map("_id")
+  id         String   @id @default(cuid()) @map("_id")
   customerId String
-  customer   Customer  @relation(fields: [customerId], references: [id])
-  products   Product[]
+  customer   Customer @relation(fields: [customerId], references: [id])
+  cartId     String
+  cart       Cart     @relation(fields: [cartId], references: [id])
   total      Float
 }
 

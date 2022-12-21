@@ -7,7 +7,7 @@ import Customer from './customer'
 abstract class User {
   id: string
   email: string
-  password?: string
+  #password?: string
   name?: string
   role: UserRole
 
@@ -18,7 +18,7 @@ abstract class User {
     this.role = role
 
     if (password)
-      this.password = bcrypt.hashSync(password, 10)
+      this.#password = bcrypt.hashSync(password, 10)
   }
 
   abstract fetchData(): Promise<any>
