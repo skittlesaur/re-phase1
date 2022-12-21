@@ -57,9 +57,59 @@ class ProductHelper {
   static async getProducts() {
     const prisma = new PrismaClient()
 
-    const products = await prisma.product.findMany()
+    const products = await prisma.product.findMany({
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        category: true,
+        stock: true,
+      },
+    })
 
-    return products
+    const productInstances = []
+
+    for (const product of products) {
+      if (product.category === ProductCategory.TOOLS) {
+        const tool = await prisma.tool.findUnique({
+          where: {
+            id: product.id,
+          },
+        })
+
+        if (!tool)
+          throw new Error('Tool not found')
+
+        productInstances.push({
+          ...product,
+          ...tool,
+        })
+      } else if (product.category === ProductCategory.OUTFITS) {
+        // @todo
+        // const outfit = await prisma.outfit.findUnique({
+        //   where: {
+        //     id: product.id,
+        //   },
+        // })
+        // productInstances.push({
+        //   ...product,
+        //   ...outfit,
+        // })
+      } else if (product.category === ProductCategory.GROCERIES) {
+        const grocery = await prisma.grocery.findUnique({
+          where: {
+            id: product.id,
+          },
+        })
+
+        productInstances.push({
+          ...product,
+          ...grocery,
+        })
+      }
+    }
+
+    return productInstances
   }
 
   static async search(query: string) {
