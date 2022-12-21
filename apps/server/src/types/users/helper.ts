@@ -24,7 +24,7 @@ class UserHelper {
     if (!user)
       throw new Error('User not found')
 
-    const isPasswordCorrect = bcrypt.compare(password, user.password)
+    const isPasswordCorrect = await bcrypt.compare(password, user.password)
 
     if (!isPasswordCorrect)
       throw new Error('Incorrect password')

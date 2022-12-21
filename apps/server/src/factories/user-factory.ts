@@ -4,6 +4,7 @@ import UserRole from '../types/users/user-role'
 import Customer from '../types/users/customer'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
+import CustomerService from '../types/users/customer-service';
 
 interface UserProps {
   email: string
@@ -16,6 +17,8 @@ class UserFactor implements IFactory {
     switch (role) {
       case UserRole.CUSTOMER:
         return new Customer(props.email, props.password, props.name)
+      case UserRole.CUSTOMER_SERVICE:
+        return new CustomerService(props.email, props.password, props.name)
       default:
         throw new Error('Invalid user role')
     }
