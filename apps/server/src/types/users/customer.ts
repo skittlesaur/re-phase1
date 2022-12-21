@@ -324,6 +324,32 @@ class Customer extends User {
     return reply
   }
 
+  async writeReview(productId: string, rating: number, comment: string): Promise<any> {
+    const prisma = new PrismaClient()
+
+    const review = await prisma.review.create({
+      data: {
+        customer: {
+          connect: {
+            id: this.id
+          }
+        },
+        product: {
+          connect: {
+            id: productId
+          }
+        },
+        rating: rating,
+        comment: comment,
+      }
+    })
+
+    if (!review)
+      throw new Error('review creation failed')
+
+    return review
+  }
+
   async create(): Promise<any> {
     const prisma = new PrismaClient()
 
