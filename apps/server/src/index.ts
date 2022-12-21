@@ -23,7 +23,8 @@ import updateComplaints from './controllers/user/costumer-service/update-complai
 import viewComplaint from './controllers/user/view-complaint';
 import reply from './controllers/user/reply';
 import viewOwnComplaints from './controllers/user/customer/view-own-complaints';
-import writeComplaint from './controllers/user/customer/writeComplaint';
+import writeComplaint from './controllers/user/customer/write-complaint';
+import writeReview from './controllers/user/customer/write-review';
 
 dotenv.config()
 const PORT = process.env.PORT
@@ -68,7 +69,8 @@ server.delete('/user/customer/cart', userRole(UserRole.CUSTOMER), removeCart)
 server.get('/user/costumer/complaint', userRole(UserRole.CUSTOMER), viewComplaint)
 server.post('user/costumer/reply', userRole(UserRole.CUSTOMER), reply)
 server.get('user/costumer/myComplaints', userRole(UserRole.CUSTOMER), viewOwnComplaints)
-server.get('user/costumer/writeComplaint', userRole(UserRole.CUSTOMER), writeComplaint)
+server.post('user/costumer/writeComplaint', userRole(UserRole.CUSTOMER), writeComplaint)
+server.post('user/costumer/writeReview', userRole(UserRole.CUSTOMER), writeReview)
 
 // Authenticated Customer Service 
 server.get('/user/customer-service/', userRole(UserRole.CUSTOMER_SERVICE), viewAllComplaints)
