@@ -17,15 +17,19 @@ model Product {
   cartId   String?
   Review   Review[]
   CartItem CartItem[]
+  Tool     Tool[]
+  Grocery  Grocery[]
 }
 
 model Tool {
   id       String   @id @default(cuid()) @map("_id")
+  product  Product  @relation(fields: [id], references: [id])
   toolType ToolType
 }
 
 model Grocery {
   id             String      @id @default(cuid()) @map("_id")
+  product        Product     @relation(fields: [id], references: [id])
   groceryType    GroceryType
   expirationDate DateTime
 }
@@ -104,10 +108,11 @@ model PurchaseHistory {
   id         String   @id @default(cuid()) @map("_id")
   customerId String
   customer   Customer @relation(fields: [customerId], references: [id])
-  cartId     String
-  cart       Cart     @relation(fields: [cartId], references: [id])
+  items      Json
   total      Float
   createdAt  DateTime @default(now())
+  Cart       Cart?    @relation(fields: [cartId], references: [id])
+  cartId     String?
 }
 
 model Review {

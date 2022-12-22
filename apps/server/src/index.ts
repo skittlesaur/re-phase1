@@ -28,6 +28,10 @@ import writeReview from './controllers/user/customer/write-review'
 import updateProfile from './controllers/user/update-profile'
 import logout from './controllers/user/logout'
 import purchaseHistory from './controllers/user/customer/history'
+import { PrismaClient } from '@prisma/client'
+import ProductCategory from './types/products/product-category'
+import ToolType from './types/products/tools/tool-type'
+import bcrypt from 'bcrypt'
 
 dotenv.config()
 const PORT = process.env.PORT
@@ -91,4 +95,63 @@ server.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`)
 })
 
+const generateData = async () => {
+  const prisma = new PrismaClient()
+
+  await prisma.customer.create({
+    data: {
+      user: {
+        create: {
+          email: 'customer@dev.dev',
+          password: await bcrypt.hash('12341234', 10),
+          role: UserRole.CUSTOMER,
+        },
+      },
+    },
+  })
+
+  await prisma.customerService.create({
+    data: {
+      user: {
+        create: {
+          email: 'cs@dev.dev',
+          password: await bcrypt.hash('12341234', 10),
+          role: UserRole.CUSTOMER_SERVICE,
+        },
+      },
+    },
+  })
+
+  await prisma.tool.create({
+    data: {
+      toolType: ToolType.HAND_TOOL,
+      product: {
+        create: {
+          name: 'Hammer',
+          price: 100,
+          stock: 10,
+          category: ProductCategory.TOOLS,
+        },
+      },
+    },
+  })
+
+  await prisma.tool.create({
+    data: {
+      toolType: ToolType.POWER_TOOL,
+      product: {
+        create: {
+          name: 'Drill',
+          price: 100,
+          stock: 10,
+          category: ProductCategory.TOOLS,
+        },
+      },
+    },
+  })
+
+  console.log('completed')
+}
+
+// generateData()
 export default server

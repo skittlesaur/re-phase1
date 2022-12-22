@@ -175,16 +175,16 @@ class Customer extends User {
 
     const purchaseHistory = await prisma.purchaseHistory.create({
       data: {
-        id: generateId(),
         total,
+        items: cart.cartItems.map(cartItem => ({
+          productId: cartItem.productId,
+          productName: cartItem.product.name,
+          productPrice: cartItem.product.price,
+          quantity: cartItem.quantity,
+        })),
         customer: {
           connect: {
             id: this.id,
-          },
-        },
-        cart: {
-          connect: {
-            id: cart.id,
           },
         },
       },
@@ -389,20 +389,7 @@ class Customer extends User {
         id: true,
         total: true,
         createdAt: true,
-        cart: {
-          select: {
-            cartItems: {
-              select: {
-                product: {
-                  select: {
-                    name: true,
-                  },
-                },
-                quantity: true,
-              },
-            },
-          },
-        },
+        items: true,
       },
       orderBy: {
         createdAt: 'desc',
