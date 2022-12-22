@@ -1,11 +1,13 @@
-import User from './user';
-import UserRole from './user-role';
-import { PrismaClient } from '@prisma/client';
-import generateId from '../../lib/generate-id';
+import User from './user'
+import UserRole from './user-role'
+import { PrismaClient } from '@prisma/client'
+import generateId from '../../lib/generate-id'
+
 class CustomerService extends User {
   constructor(email: string, password?: string, name?: string) {
     super(UserRole.CUSTOMER_SERVICE, email, password, name)
   }
+
   async viewAllComplaints(): Promise<any> {
     const prisma = new PrismaClient()
 
@@ -27,11 +29,12 @@ class CustomerService extends User {
         },
       },
       orderBy: {
-        date: 'desc'
+        date: 'desc',
       },
     })
     return complaints
   }
+
   async viewComplaint(complaintId: string): Promise<any> {
     const prisma = new PrismaClient()
     const complaint = await prisma.complaint.findUnique({
@@ -66,7 +69,7 @@ class CustomerService extends User {
             customerId: true,
           },
           orderBy: {
-            date: 'asc'
+            date: 'asc',
           },
         },
       },
@@ -75,11 +78,12 @@ class CustomerService extends User {
       throw new Error('Cannot find this complaint')
     return complaint
   }
+
   async updateStatus(complaintId: string, status: boolean): Promise<any> {
     const prisma = new PrismaClient()
     const complaint = await prisma.complaint.update({
       where: {
-        id: complaintId
+        id: complaintId,
       },
       data: {
         status: status,
@@ -89,6 +93,7 @@ class CustomerService extends User {
       throw new Error('Cannot find this complaint')
     return (complaint)
   }
+
   async writeReply(text: string, complaintId: string): Promise<any> {
     const prisma = new PrismaClient()
     const reply = await prisma.reply.create({
@@ -96,23 +101,24 @@ class CustomerService extends User {
         text: text,
         author: {
           connect: {
-            id: this.id
+            id: this.id,
           },
         },
         complaint: {
           connect: {
-            id: complaintId
+            id: complaintId,
           },
         },
         customerService: {
           connect: {
-            id: this.id
+            id: this.id,
           },
         },
       },
     })
     return reply
   }
+
   async fetchData(): Promise<any> {
     const prisma = new PrismaClient()
     const customerService = await prisma.customerService.findUnique({
@@ -124,6 +130,7 @@ class CustomerService extends User {
       throw new Error('User is not a customer sevice employee')
     return this
   }
+
   async create(): Promise<any> {
     const prisma = await new PrismaClient()
     const costumerService = await prisma.customerService.create({
@@ -134,4 +141,5 @@ class CustomerService extends User {
     return this
   }
 }
+
 export default CustomerService
