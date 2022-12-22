@@ -8,14 +8,17 @@ import useUser from '@hooks/use-user'
 const Logout = () => {
   const queryClient = useQueryClient()
   const router = useRouter()
-  const { user, isLoading } = useUser()
-
+  const { user, isLoading, isError } = useUser()
+  console.log(isError)
   const mutation = useMutation({
     mutationKey: 'logout',
     mutationFn: () => api.post('/user/logout').then((res) => res.data),
     onSuccess: async () => {
       await queryClient.invalidateQueries('user')
-      router.reload()
+      router.push('/login')
+    },
+    onError: () => {
+      router.push('/login')
     },
   })
 
@@ -24,10 +27,10 @@ const Logout = () => {
       mutation.mutate()
     }
 
-    if (!isLoading && !user) {
-      router.push('/')
+    if (isError) {
+      router.push('/login')
     }
-  }, [isLoading, user])
+  }, [isLoading, user, user])
 
   return (
     <div className="w-full h-screen flex items-center justify-center">
