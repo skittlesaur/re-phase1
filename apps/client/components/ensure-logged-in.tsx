@@ -11,7 +11,7 @@ const EnsureLoggedIn = () => {
 
     if (isError || !user)
       router.push(`/login?message=You must be logged in to view this page.`)
-  }, [user, isError, isLoading])
+  }, [user, isError, isLoading, router])
 
   return (
     <>

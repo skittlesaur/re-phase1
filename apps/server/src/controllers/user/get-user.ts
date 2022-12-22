@@ -7,32 +7,7 @@ const getUser = async (req: Request, res: Response) => {
     const { user } = req
     if (!user) throw new Error('User not found')
 
-    let userDetails: any = user
-
-    const prism = new PrismaClient()
-    if (user?.role === 'CUSTOMER') {
-      userDetails = {
-        ...userDetails,
-        ...(await prism.customer.findUnique({
-          where: {
-            id: user.id,
-          },
-          include: {
-            cart: {
-              include: {
-                cartItems: {
-                  include: {
-                    product: true,
-                  },
-                },
-              },
-            },
-          },
-        })),
-      }
-    }
-
-    res.status(200).json(userDetails)
+    res.status(200).json(user)
   } catch (e: any) {
     res.status(500).json({ error: e.message })
   }
