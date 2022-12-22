@@ -279,7 +279,7 @@ class Customer extends User {
             },
           },
           orderBy: {
-            date: 'desc',
+            date: 'asc',
           },
         },
       },
