@@ -93,63 +93,63 @@ server.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`)
 })
 
-const generateData = async () => {
-  const prisma = new PrismaClient()
+// const generateData = async () => {
+//   const prisma = new PrismaClient()
 
-  await prisma.customer.create({
-    data: {
-      user: {
-        create: {
-          email: 'customer@dev.dev',
-          password: await bcrypt.hash('12341234', 10),
-          role: UserRole.CUSTOMER,
-        },
-      },
-    },
-  })
+//   await prisma.customer.create({
+//     data: {
+//       user: {
+//         create: {
+//           email: 'customer@dev.dev',
+//           password: await bcrypt.hash('12341234', 10),
+//           role: UserRole.CUSTOMER,
+//         },
+//       },
+//     },
+//   })
 
-  await prisma.customerService.create({
-    data: {
-      user: {
-        create: {
-          email: 'cs@dev.dev',
-          password: await bcrypt.hash('12341234', 10),
-          role: UserRole.CUSTOMER_SERVICE,
-        },
-      },
-    },
-  })
+//   await prisma.customerService.create({
+//     data: {
+//       user: {
+//         create: {
+//           email: 'cs@dev.dev',
+//           password: await bcrypt.hash('12341234', 10),
+//           role: UserRole.CUSTOMER_SERVICE,
+//         },
+//       },
+//     },
+//   })
 
-  await prisma.tool.create({
-    data: {
-      toolType: ToolType.HAND_TOOL,
-      product: {
-        create: {
-          name: 'Hammer',
-          price: 100,
-          stock: 10,
-          category: ProductCategory.TOOLS,
-        },
-      },
-    },
-  })
+//   await prisma.tool.create({
+//     data: {
+//       toolType: ToolType.HAND_TOOL,
+//       product: {
+//         create: {
+//           name: 'Hammer',
+//           price: 100,
+//           stock: 10,
+//           category: ProductCategory.TOOLS,
+//         },
+//       },
+//     },
+//   })
 
-  await prisma.tool.create({
-    data: {
-      toolType: ToolType.POWER_TOOL,
-      product: {
-        create: {
-          name: 'Drill',
-          price: 100,
-          stock: 10,
-          category: ProductCategory.TOOLS,
-        },
-      },
-    },
-  })
+//   await prisma.tool.create({
+//     data: {
+//       toolType: ToolType.POWER_TOOL,
+//       product: {
+//         create: {
+//           name: 'Drill',
+//           price: 100,
+//           stock: 10,
+//           category: ProductCategory.TOOLS,
+//         },
+//       },
+//     },
+//   })
 
-  console.log('completed')
-}
+//   console.log('completed')
+// }
 
-// generateData()
+// // generateData()
 export default server
