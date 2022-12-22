@@ -20,11 +20,12 @@ import getUser from './controllers/user/get-user'
 import cart from './controllers/user/customer/cart'
 import viewAllComplaints from './controllers/user/costumer-service/view-all-complaints'
 import updateComplaints from './controllers/user/costumer-service/update-complaint'
-import viewComplaint from './controllers/user/view-complaint';
-import reply from './controllers/user/reply';
-import viewOwnComplaints from './controllers/user/customer/view-own-complaints';
-import writeComplaint from './controllers/user/customer/write-complaint';
-import writeReview from './controllers/user/customer/write-review';
+import viewComplaint from './controllers/user/view-complaint'
+import reply from './controllers/user/reply'
+import viewOwnComplaints from './controllers/user/customer/view-own-complaints'
+import writeComplaint from './controllers/user/customer/write-complaint'
+import writeReview from './controllers/user/customer/write-review'
+import updateProfile from './controllers/user/update-profile'
 
 dotenv.config()
 const PORT = process.env.PORT
@@ -61,6 +62,7 @@ server.post('/user/register', register)
 // authenticated user
 server.use(authenticatedUserMiddleware)
 server.get('/user', getUser)
+server.put('/user', updateProfile)
 server.get('/user/verify', verify)
 server.post('/user/customer/purchase', userRole(UserRole.CUSTOMER), purchase)
 server.get('/user/customer/cart', userRole(UserRole.CUSTOMER), cart)
