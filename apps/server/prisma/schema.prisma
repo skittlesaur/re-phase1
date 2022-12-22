@@ -1,3 +1,7 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -34,6 +38,12 @@ model Grocery {
   expirationDate DateTime
 }
 
+model Outfits{
+  id     String     @id @default(cuid()) @map("_id")
+  outfitType OutfitType
+  
+}
+
 model User {
   id              String           @id @default(cuid()) @map("_id")
   email           String           @unique
@@ -42,6 +52,7 @@ model User {
   role            UserRole
   customer        Customer?
   customerService CustomerService?
+  productSeller  ProductSeller?
   Complaint       Complaint[]
   Reply           Reply[]
 }
@@ -54,6 +65,12 @@ model Customer {
   reviews         Review[]
   complaints      Complaint[]
   replies         Reply[]
+}
+
+model ProductSeller{
+  id              String            @id @default(cuid()) @map("_id")
+  user            User              @relation(fields: [id], references: [id])
+  category        ProductCategory
 }
 
 model CustomerService {
@@ -152,4 +169,9 @@ enum UserRole {
   PRODUCTS_SELLLER
   CUSTOMER_SERVICE
   CUSTOMER
+}
+
+enum OutfitType {
+  WINTER_OUTFITS 
+  SUMMER_OUTFITS 
 }
