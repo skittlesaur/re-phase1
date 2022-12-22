@@ -27,7 +27,7 @@ const Logout = () => {
     if (!isLoading && !user) {
       router.push('/')
     }
-  }, [isLoading, user, mutation])
+  }, [isLoading, user])
 
   return (
     <div className="w-full h-screen flex items-center justify-center">
