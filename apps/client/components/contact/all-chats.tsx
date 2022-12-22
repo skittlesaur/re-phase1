@@ -1,17 +1,13 @@
-import useComplaints from '@hooks/use-complaints'
-import Loader from '@components/loader'
+import useComplaints from "@hooks/use-complaints";
+import Loader from "@components/loader";
 
 const AllChats = ({ user }: any) => {
-  const { complaints, isLoading } = useComplaints(user.role)
+  const { complaints, isLoading } = useComplaints(user.role);
 
-  if (isLoading) return <Loader />
-  console.log(complaints)
+  if (isLoading) return <Loader />;
+  console.log(complaints);
 
-  return (
-    <div>
+  return <div>{complaints}</div>;
+};
 
-    </div>
-  )
-}
-
-export default AllChats
+export default AllChats;

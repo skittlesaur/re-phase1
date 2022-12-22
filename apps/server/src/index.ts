@@ -66,21 +66,22 @@ server.use(authenticatedUserMiddleware)
 server.get('/user', getUser)
 server.put('/user', updateProfile)
 server.get('/user/verify', verify)
-server.post('/user/customer/purchase', userRole(UserRole.CUSTOMER), purchase)
-server.get('/user/customer/cart', userRole(UserRole.CUSTOMER), cart)
-server.post('/user/customer/cart', userRole(UserRole.CUSTOMER), addCart)
-server.delete('/user/customer/cart', userRole(UserRole.CUSTOMER), removeCart)
-server.get('/user/customer/complaint', userRole(UserRole.CUSTOMER), viewComplaint)
-server.post('/user/customer/reply', userRole(UserRole.CUSTOMER), reply)
-server.get('/user/customer/myComplaints', userRole(UserRole.CUSTOMER), viewOwnComplaints)
-server.post('/user/customer/writeComplaint', userRole(UserRole.CUSTOMER), writeComplaint)
-server.post('/user/customer/review', userRole(UserRole.CUSTOMER), writeReview)
+server.post('/user/customer/purchase', userRole([UserRole.CUSTOMER]), purchase)
+server.get('/user/customer/cart', userRole([UserRole.CUSTOMER]), cart)
+server.post('/user/customer/cart', userRole([UserRole.CUSTOMER]), addCart)
+server.delete('/user/customer/cart', userRole([UserRole.CUSTOMER]), removeCart)
+server.get('/user/customer/myComplaints', userRole([UserRole.CUSTOMER]), viewOwnComplaints)
+server.post('/user/customer/writeComplaint', userRole([UserRole.CUSTOMER]), writeComplaint)
+server.post('/user/customer/review', userRole([UserRole.CUSTOMER]), writeReview)
 
 // Authenticated Customer Service 
-server.get('/user/customer-service/', userRole(UserRole.CUSTOMER_SERVICE), viewAllComplaints)
-server.put('/user/customer-service/status', userRole(UserRole.CUSTOMER_SERVICE), updateComplaints)
-server.get('/user/customer-service/complaint', userRole(UserRole.CUSTOMER_SERVICE), viewComplaint)
-server.post('/user/customer-service/reply', userRole(UserRole.CUSTOMER_SERVICE), reply)
+server.get('/user/customer-service/', userRole([UserRole.CUSTOMER_SERVICE]), viewAllComplaints)
+server.put('/user/customer-service/status', userRole([UserRole.CUSTOMER_SERVICE]), updateComplaints)
+
+
+//shared endpoints
+server.get('/user/complaint', userRole([UserRole.CUSTOMER, UserRole.CUSTOMER_SERVICE]), viewComplaint)
+server.post('/user/reply', userRole([UserRole.CUSTOMER, UserRole.CUSTOMER_SERVICE]), reply)
 
 
 server.listen(PORT, () => {
