@@ -13,6 +13,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "@types/styled-components": "^5.1.26",
     "eslint-config-custom": "*",
     "prettier": "latest",
     "prisma": "^4.7.1",
@@ -21,6 +22,10 @@
   "engines": {
     "node": ">=14.0.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@material-ui/core": "^4.12.4",
+    "@material-ui/icons": "^4.11.3",
+    "styled-components": "^5.3.6"
+  },
   "packageManager": "yarn@1.22.19"
 }

@@ -7,6 +7,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import useUser from '@hooks/use-user'
 import useCart from '@hooks/use-cart'
 
+/////ADD THE CART NAVIGATION BUTTON
+
 const pages = [
   {
     title: 'Home',
@@ -16,6 +18,7 @@ const pages = [
     title: 'Contact',
     href: '/contact',
   },
+
 ]
 
 interface NavProps {
