@@ -26,7 +26,7 @@ interface NavProps {
 
 const Nav = ({ currentPage = 'other', search = () => {}, isSearching = false }: NavProps) => {
   const [isSearchActive, setIsSearchActive] = useState(false)
-  const { user } = useUser()
+  const { user, isError: userError } = useUser()
   const { cart } = useCart()
 
   const countItems = useMemo(() => {
@@ -119,7 +119,7 @@ const Nav = ({ currentPage = 'other', search = () => {}, isSearching = false }: 
                 <CartIcon className="fill-current" />
               </Link>
             )}
-            {user ? (
+            {user && !userError ? (
               <div className="relative group">
                 <div className="text-gray-500 w-7 p-1.5 rounded-full aspect-square transition-all duration-200 ease-in-out">
                   <PersonIcon className="fill-current" />
