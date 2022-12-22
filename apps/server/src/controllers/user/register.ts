@@ -18,6 +18,7 @@ const register = async (req: Request, res: Response) => {
     res.cookie('token', token, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
+      domain: process.env.CLIENT_URL,
     })
 
     const { password: _, ...userWithoutPassword } = user
