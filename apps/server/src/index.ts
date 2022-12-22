@@ -26,6 +26,7 @@ import viewOwnComplaints from './controllers/user/customer/view-own-complaints'
 import writeComplaint from './controllers/user/customer/write-complaint'
 import writeReview from './controllers/user/customer/write-review'
 import updateProfile from './controllers/user/update-profile'
+import logout from './controllers/user/logout'
 
 dotenv.config()
 const PORT = process.env.PORT
@@ -58,6 +59,7 @@ server.post('/products/search', searchProducts)
 
 server.post('/user/login', login)
 server.post('/user/register', register)
+server.post('/user/logout', logout)
 
 // authenticated user
 server.use(authenticatedUserMiddleware)
@@ -72,7 +74,7 @@ server.get('/user/customer/complaint', userRole(UserRole.CUSTOMER), viewComplain
 server.post('/user/customer/reply', userRole(UserRole.CUSTOMER), reply)
 server.get('/user/customer/myComplaints', userRole(UserRole.CUSTOMER), viewOwnComplaints)
 server.post('/user/customer/writeComplaint', userRole(UserRole.CUSTOMER), writeComplaint)
-server.post('/user/customer/writeReview', userRole(UserRole.CUSTOMER), writeReview)
+server.post('/user/customer/review', userRole(UserRole.CUSTOMER), writeReview)
 
 // Authenticated Customer Service 
 server.get('/user/customer-service/', userRole(UserRole.CUSTOMER_SERVICE), viewAllComplaints)

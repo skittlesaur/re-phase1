@@ -1,59 +1,61 @@
-import api from "@lib/api";
-import Router, { useRouter } from "next/router";
-import toast from "react-hot-toast";
-import { useMutation } from "react-query";
+import api from '@lib/api'
+import { useRouter } from 'next/router'
+import toast from 'react-hot-toast'
+import { useMutation, useQueryClient } from 'react-query'
 
 const Register = () => {
-  const router = useRouter();
+  const queryClient = useQueryClient()
+  const router = useRouter()
 
   const mutation = useMutation({
-    mutationKey: "register",
+    mutationKey: 'register',
     mutationFn: ({
-      email,
-      password,
-      name,
-    }: {
+                   email,
+                   password,
+                   name,
+                 }: {
       email: string;
       password: string;
       name: string;
     }) =>
       api
-        .post("/user/register", {
+        .post('/user/register', {
           email: email,
           password: password,
           name: name,
         })
         .then((res) => res.data),
     retry: 0,
-    onSuccess: () => {
-      Router.push("/");
+    onSuccess: async () => {
+      await queryClient.invalidateQueries('user')
+      router.push('/')
     },
     onError: (e: any) => {
-      toast.error(e.response?.data.error);
+      toast.error(e.response?.data.error)
     },
-  });
+  })
 
   const submitHandler = (e: any) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const email = e.target[0].value;
-    let name = e.target[1].value;
-    const password = e.target[2].value;
-    const passwordCheck = e.target[3].value;
+    const email = e.target[0].value
+    let name = e.target[1].value
+    const password = e.target[2].value
+    const passwordCheck = e.target[3].value
 
-    if (!name) name = "";
+    if (!name) name = ''
 
     if (!email) {
-      return toast.error("please enter an email address");
+      return toast.error('please enter an email address')
     }
 
-    if (!password) return toast.error("please insert a password");
+    if (!password) return toast.error('please insert a password')
 
     if (password !== passwordCheck)
-      return toast.error("passwords do not match");
+      return toast.error('passwords do not match')
 
-    mutation.mutate({ email, password, name });
-  };
+    mutation.mutate({ email, password, name })
+  }
 
   return (
     <div>
@@ -81,7 +83,7 @@ const Register = () => {
         <button type="submit">Register</button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default Register;
+export default Register

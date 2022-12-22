@@ -31,7 +31,7 @@ const Profile = () => {
     if (!user || isLoading) return
     setName(user.name)
     setEmail(user.email)
-  }, [user])
+  }, [user, isLoading])
 
   if (isLoading) return <Loader />
 
@@ -49,6 +49,7 @@ const Profile = () => {
       newPassword,
     })
   }
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center">

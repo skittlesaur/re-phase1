@@ -13,7 +13,7 @@ const register = async (req: Request, res: Response) => {
 
     const user = await UserHelper.register(role?.toUpperCase() ?? 'CUSTOMER', email, password, name)
 
-    const token = user.generateToken()
+    const token = UserHelper.generateToken(user.id)
 
     res.cookie('token', token, {
       httpOnly: true,
@@ -21,8 +21,7 @@ const register = async (req: Request, res: Response) => {
       domain: process.env.COOKIE_DOMAIN,
     })
 
-    const { password: _, ...userWithoutPassword } = user
-    res.status(200).json(userWithoutPassword)
+    res.status(200).json({ authenticated: true })
   } catch (e: any) {
     res.status(400).json({ error: e.message })
   }

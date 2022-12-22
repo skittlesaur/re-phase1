@@ -25,12 +25,6 @@ abstract class User {
 
   abstract create(): Promise<any>
 
-  generateToken(): string {
-    return jwt.sign({ id: this.id }, process.env.JWT_SECRET ?? '', {
-      expiresIn: '1d',
-    })
-  }
-
   async updateProfile(name: string, email: string, oldPassword: string, newPassword: string): Promise<any> {
     const prisma = new PrismaClient()
 

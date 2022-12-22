@@ -1,6 +1,12 @@
 import Product from '@components/home/product'
+import useProducts from '@hooks/use-products'
+import Loader from '@components/loader'
 
-const Home = ({ products, searchResult }: any) => {
+const Home = ({ searchResult }: any) => {
+  const { products, isLoading } = useProducts()
+
+  if (isLoading) return <Loader />
+
   return (
     <div className="flex flex-col gap-8">
       <h1 className="text-2xl">
