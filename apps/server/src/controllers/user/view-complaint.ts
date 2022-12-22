@@ -6,7 +6,7 @@ const viewComplaint = async (req: Request, res: Response) => {
   try {
 
     const role = req.user?.role?.toUpperCase()
-    const { complaintId } = req.body
+    const { complaintId } = req.params
 
     if (role === 'CUSTOMER') {
       const user = req.user as Customer

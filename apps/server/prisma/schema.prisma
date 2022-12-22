@@ -34,10 +34,9 @@ model Grocery {
   expirationDate DateTime
 }
 
-model Outfits{
-  id     String     @id @default(cuid()) @map("_id")
+model Outfits {
+  id         String     @id @default(cuid()) @map("_id")
   outfitType OutfitType
-
 }
 
 model User {
@@ -48,8 +47,8 @@ model User {
   role            UserRole
   customer        Customer?
   customerService CustomerService?
-  productSeller  ProductSeller?
-  Complaint       Complaint[]
+  productSeller   ProductSeller?
+  complaints      Complaint[]
   Reply           Reply[]
 }
 
@@ -63,10 +62,10 @@ model Customer {
   replies         Reply[]
 }
 
-model ProductSeller{
-  id              String            @id @default(cuid()) @map("_id")
-  user            User              @relation(fields: [id], references: [id])
-  category        ProductCategory
+model ProductSeller {
+  id       String          @id @default(cuid()) @map("_id")
+  user     User            @relation(fields: [id], references: [id])
+  category ProductCategory
 }
 
 model CustomerService {
@@ -84,6 +83,8 @@ model Complaint {
   author   Customer @relation(fields: [authorId], references: [id]) // customer tht wrote the complaint
   authorId String
   replies  Reply[]
+  User     User?    @relation(fields: [userId], references: [id])
+  userId   String?
 }
 
 model Reply {
