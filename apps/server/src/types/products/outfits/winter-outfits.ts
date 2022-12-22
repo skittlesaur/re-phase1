@@ -1,3 +1,4 @@
+import { PrismaClient } from '@prisma/client'
 import Outfits from './outfit'
 import OutfitType from './outfit-type'
 
