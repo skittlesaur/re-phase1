@@ -48,6 +48,7 @@ model User {
   role            UserRole
   customer        Customer?
   customerService CustomerService?
+  productSeller  ProductSeller?
   Complaint       Complaint[]
   Reply           Reply[]
 }
@@ -60,6 +61,12 @@ model Customer {
   reviews         Review[]
   complaints      Complaint[]
   replies         Reply[]
+}
+
+model ProductSeller{
+  id              String            @id @default(cuid()) @map("_id")
+  user            User              @relation(fields: [id], references: [id])
+  category        ProductCategory
 }
 
 model CustomerService {

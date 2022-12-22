@@ -1,38 +1,77 @@
-/*He provides the product on the system.
-● He can edit any added product.
-● He can remove any added product.
-● He can check the performance of a product*/
 import User from "./user"
-//import Product from '../products/product'
-import { ProductCategory, PrismaClient, UserRole, Product} from "@prisma/client"
-import generateId from '../../lib/generate-id'
+import { ProductCategory, PrismaClient, UserRole, Product, ProductSeller} from "@prisma/client"
 import addProduct from "../../controllers/user/products-seller/add-product"
 
 class ProductsSeller extends User{
+    productSeller: ProductSeller
+    category: ProductCategory
     product: Product
-   // category: ProductCategory
-    fetchData(): Promise<any> {
-        throw new Error("Method not implemented.")
+    async fetchData(): Promise<any> {
+        const prisma = new PrismaClient()
+
+        const productseller = await prisma.productSeller.findUnique({
+            where: {
+                id: this.id,
+            }
+        })
+        if (!productseller)
+         throw new Error('User is not a product seller')
+
+        return productseller
     }
-    create(): Promise<any> {
-        throw new Error("Method not implemented.")
+    async create(): Promise<any> {
+        const prisma = new PrismaClient()
+
+        const productseller = await prisma.productSeller.create({
+            data: {
+              id: this.id,
+              category: this.category,
+            },
+        })
+      
+        return productseller
     }
     constructor(email: string, password?: string, name?: string){
         super(UserRole.PRODUCTS_SELLLER, email, password, name)
     }
      async addProduct(name: string, category: ProductCategory, stock: number, price: number): Promise<any>{
         const prisma = new PrismaClient()
-        const productExists = await prisma.product.findUnique({
-            where:{
-                id: this.product?.id ?? '',
-            },
-        })
-        if(!productExists){
-            ///////////////////////////to be completed
-            const product = await prisma.product
-            this.product = product
-        }
 
+        const product = await prisma.product.create({
+            data: {
+                name, price, stock, category,
+            }
+        })
+        return product
      }
+     async removeProduct(id: string):Promise<any> {
+        const prisma = new PrismaClient()
+        const productseller =  await prisma.product.delete({
+            where: {
+               id: id,
+            },
+          })
+       return productseller
+    }
+    async viewProductInsights(): Promise<any>{
+        const prisma = new PrismaClient()
+
+        const insights = await prisma.product.findMany({
+            select:{
+                id: true,
+                name: true,
+                price: true,
+                stock: true,
+                category: true,
+                Review: true,
+            },
+            orderBy:{
+                id: "asc"
+            }
+        })
+        if (!insights)
+         throw new Error("Cannot find this product's insights")
+        return insights
+    }
 }
 export default ProductsSeller
