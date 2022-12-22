@@ -217,7 +217,7 @@ class Customer extends User {
 
     const complaints = await prisma.complaint.findMany({
       where: {
-        id: this.id,
+        authorId: this.id,
       },
       select: {
         date: true,

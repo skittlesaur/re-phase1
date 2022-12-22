@@ -66,17 +66,17 @@ server.post('/user/customer/purchase', userRole(UserRole.CUSTOMER), purchase)
 server.get('/user/customer/cart', userRole(UserRole.CUSTOMER), cart)
 server.post('/user/customer/cart', userRole(UserRole.CUSTOMER), addCart)
 server.delete('/user/customer/cart', userRole(UserRole.CUSTOMER), removeCart)
-server.get('/user/costumer/complaint', userRole(UserRole.CUSTOMER), viewComplaint)
-server.post('user/costumer/reply', userRole(UserRole.CUSTOMER), reply)
-server.get('user/costumer/myComplaints', userRole(UserRole.CUSTOMER), viewOwnComplaints)
-server.post('user/costumer/writeComplaint', userRole(UserRole.CUSTOMER), writeComplaint)
-server.post('user/costumer/writeReview', userRole(UserRole.CUSTOMER), writeReview)
+server.get('/user/customer/complaint', userRole(UserRole.CUSTOMER), viewComplaint)
+server.post('/user/customer/reply', userRole(UserRole.CUSTOMER), reply)
+server.get('/user/customer/myComplaints', userRole(UserRole.CUSTOMER), viewOwnComplaints)
+server.post('/user/customer/writeComplaint', userRole(UserRole.CUSTOMER), writeComplaint)
+server.post('/user/customer/writeReview', userRole(UserRole.CUSTOMER), writeReview)
 
 // Authenticated Customer Service 
 server.get('/user/customer-service/', userRole(UserRole.CUSTOMER_SERVICE), viewAllComplaints)
 server.put('/user/customer-service/status', userRole(UserRole.CUSTOMER_SERVICE), updateComplaints)
-server.get('/user/costumer-service/complaint', userRole(UserRole.CUSTOMER_SERVICE), viewComplaint)
-server.post('user/costumer-service/reply', userRole(UserRole.CUSTOMER_SERVICE), reply)
+server.get('/user/customer-service/complaint', userRole(UserRole.CUSTOMER_SERVICE), viewComplaint)
+server.post('/user/customer-service/reply', userRole(UserRole.CUSTOMER_SERVICE), reply)
 
 
 server.listen(PORT, () => {
