@@ -19,8 +19,12 @@ class CustomerService extends User {
         status: true,
         author: {
           select: {
-            email: true,
-            name: true,
+            user: {
+              select: {
+                email: true,
+                name: true,
+              },
+            },
           },
         },
       },
@@ -47,9 +51,13 @@ class CustomerService extends User {
         status: true,
         author: {
           select: {
-            email: true,
-            name: true,
-          }
+            user: {
+              select: {
+                email: true,
+                name: true,
+              },
+            },
+          },
         },
         replies: {
           select: {
@@ -107,6 +115,11 @@ class CustomerService extends User {
         complaint: {
           connect: {
             id: complaintId
+          },
+        },
+        customerService: {
+          connect: {
+            id: this.id
           },
         },
       },

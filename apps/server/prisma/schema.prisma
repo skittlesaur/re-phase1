@@ -38,7 +38,6 @@ model User {
   role            UserRole
   customer        Customer?
   customerService CustomerService?
-  Complaint       Complaint[]
   Reply           Reply[]
 }
 
@@ -59,16 +58,14 @@ model CustomerService {
 }
 
 model Complaint {
-  id         String    @id @default(cuid()) @map("_id")
-  title      String
-  text       String
-  date       DateTime  @default(now())
-  status     Boolean // if it's resolved or not (can only be changed by the cutomer service) could be enum
-  author     User      @relation(fields: [authorId], references: [id]) // customer tht wrote the complaint
-  authorId   String
-  replies    Reply[]
-  Customer   Customer? @relation(fields: [customerId], references: [id])
-  customerId String?
+  id       String   @id @default(cuid()) @map("_id")
+  title    String
+  text     String
+  date     DateTime @default(now())
+  status   Boolean // if it's resolved or not (can only be changed by the cutomer service) could be enum
+  author   Customer @relation(fields: [authorId], references: [id]) // customer tht wrote the complaint
+  authorId String
+  replies  Reply[]
 }
 
 model Reply {
@@ -79,9 +76,9 @@ model Reply {
   authorId          String
   complaint         Complaint        @relation(fields: [complaintId], references: [id])
   complaintId       String
-  Customer          Customer?        @relation(fields: [customerId], references: [id])
+  customer          Customer?        @relation(fields: [customerId], references: [id])
   customerId        String?
-  CustomerService   CustomerService? @relation(fields: [customerServiceId], references: [id])
+  customerService   CustomerService? @relation(fields: [customerServiceId], references: [id])
   customerServiceId String?
 }
 
@@ -117,7 +114,6 @@ model Review {
   customer   Customer @relation(fields: [customerId], references: [id])
   product    Product  @relation(fields: [productId], references: [id])
   rating     Int
-  comment    String
   customerId String
   productId  String
 }

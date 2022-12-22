@@ -225,8 +225,12 @@ class Customer extends User {
         status: true,
         author: {
           select: {
-            email: true,
-            name: true,
+            user: {
+              select: {
+                email: true,
+                name: true,
+              },
+            },
           },
         },
       },
@@ -253,8 +257,12 @@ class Customer extends User {
         status: true,
         author: {
           select: {
-            email: true,
-            name: true,
+            user: {
+              select: {
+                email: true,
+                name: true,
+              },
+            },
           },
         },
         replies: {
@@ -319,6 +327,11 @@ class Customer extends User {
             id: complaintId,
           },
         },
+        customer: {
+          connect: {
+            id: this.id
+          },
+        },
       },
     })
 
@@ -344,7 +357,6 @@ class Customer extends User {
           },
         },
         rating: rating,
-        comment: comment,
       },
     })
 
