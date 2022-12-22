@@ -13,7 +13,7 @@ const Home = ({ searchResult }: any) => {
         Products
       </h1>
       <div className="grid grid-cols-4 gap-4">
-        {!searchResult && products.map((product: any) => (
+        {!searchResult && products?.map((product: any) => (
           <Product product={product} key={product.id} />
         ))}
         {searchResult && searchResult.map((product: any) => (
