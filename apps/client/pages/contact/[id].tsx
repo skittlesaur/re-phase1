@@ -39,6 +39,29 @@ const Complaint = () => {
     },
   });
 
+  const mutation2 = useMutation({
+    mutationKey: "update",
+    mutationFn: ({
+      status,
+      complaintId,
+    }: {
+      status: Boolean;
+      complaintId: string;
+    }) =>
+      api
+        .put("/user/customer-service/status", {
+          status: status,
+          complaintId: complaintId,
+        })
+        .then((res) => res.data),
+    retry: 0,
+    onSuccess: async () =>
+      await queryClient.invalidateQueries({ queryKey: ["update"] }),
+    onError: () => {
+      toast.error("An error from update status has taken place");
+    },
+  });
+
   const complaint = query.data;
   const complaintId = id as string;
   const isLoading = query.isLoading;
@@ -51,6 +74,12 @@ const Complaint = () => {
     if (!text) return toast.error("Complaint message is required");
 
     mutation.mutate({ text, complaintId });
+  };
+
+  const clickHandler = (status: boolean, complaintId: string) => {
+    mutation2.mutate({ status, complaintId });
+
+    console.log(`${status} + ${complaintId}`);
   };
 
   if (isLoading) return <Loader />;
@@ -70,7 +99,15 @@ const Complaint = () => {
 
           <h1>Status: {complaint.status ? "Solved" : "Unsolved"}</h1>
           <br />
-          {user.role === "CUSTOMER_SERVICE" && <button> change status </button>}
+          {user.role === "CUSTOMER_SERVICE" && (
+            <button
+              onClick={() =>
+                clickHandler(complaint.status as boolean, complaintId)
+              }
+            >
+              change status
+            </button>
+          )}
           <br />
 
           {complaint.author.user.name && (

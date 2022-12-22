@@ -86,7 +86,7 @@ class CustomerService extends User {
         id: complaintId,
       },
       data: {
-        status: status,
+        status: status as boolean,
       },
     })
     if (!complaint)

@@ -240,6 +240,7 @@ class Customer extends User {
                 name: true,
               },
             },
+            customerId: true,
           },
           orderBy: {
             date: 'asc',
