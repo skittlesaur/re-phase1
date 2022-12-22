@@ -2,6 +2,7 @@ import api from '@lib/api'
 import Router, { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
 import { useMutation, useQueryClient } from 'react-query'
+import Loader from '@components/loader'
 
 const Login = () => {
   const queryClient = useQueryClient()
@@ -42,19 +43,42 @@ const Login = () => {
   }
 
   return (
-    <div>
-      <form onSubmit={submitHandler}>
-        <label>
-          Email:
-          <input type="email" placeholder="example@example.com"></input>
-        </label>
-        <br />
-        <label>
-          Password:
-          <input type="password" minLength={8}></input>
-        </label>
-        <br />
-        <button type="submit">Login</button>
+    <div className="w-[20em]">
+      <form
+        onSubmit={submitHandler}
+        className="flex flex-col gap-2"
+      >
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-gray-500">
+            Email
+          </label>
+          <input
+            placeholder="Email"
+            type="email"
+            className="border border-gray-200 rounded-md px-2 py-1 focus:outline-none focus:border-black"
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-gray-500">
+            Password
+          </label>
+          <input
+            placeholder="Password"
+            type="password"
+            className="border border-gray-200 rounded-md px-2 py-1 focus:outline-none focus:border-black"
+          />
+        </div>
+        <button
+          disabled={mutation.isLoading}
+          className="mt-4 bg-black h-10 text-white rounded-md px-2 py-1 font-medium border border-transparent hover:border-black hover:bg-gray-700 disabled:cursor-not-allowed disabled:bg-gray-500 disabled:border-transparent transition-all duration-200 ease-in-out"
+          type="submit"
+        >
+          {mutation.isLoading ? (
+            <Loader full={false} />
+          ) : (
+            'Login'
+          )}
+        </button>
       </form>
     </div>
   )

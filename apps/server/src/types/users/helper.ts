@@ -59,14 +59,37 @@ class UserHelper {
     if (userExists)
       throw new Error('User already exists')
 
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: bcrypt.hashSync(password, 10),
-        name,
-        role,
-      },
-    })
+    let user
+
+    if (role === UserRole.CUSTOMER) {
+      user = await prisma.customer.create({
+        data: {
+          user: {
+            create: {
+              email,
+              password: await bcrypt.hash(password, 10),
+              name,
+              role,
+            },
+          },
+        },
+      })
+    } else if (role === UserRole.CUSTOMER_SERVICE) {
+      user = await prisma.customerService.create({
+        data: {
+          user: {
+            create: {
+              email,
+              password: await bcrypt.hash(password, 10),
+              name,
+              role,
+            },
+          },
+        },
+      })
+    }
+
+    // @todo product seller
 
     return user
   }
