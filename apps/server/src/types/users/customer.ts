@@ -377,6 +377,40 @@ class Customer extends User {
 
     return this
   }
+
+  async getPurchaseHistory(): Promise<any> {
+    const prisma = new PrismaClient()
+
+    const purchases = await prisma.purchaseHistory.findMany({
+      where: {
+        customerId: this.id,
+      },
+      select: {
+        id: true,
+        total: true,
+        createdAt: true,
+        cart: {
+          select: {
+            cartItems: {
+              select: {
+                product: {
+                  select: {
+                    name: true,
+                  },
+                },
+                quantity: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    return purchases
+  }
 }
 
 export default Customer

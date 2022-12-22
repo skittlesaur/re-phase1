@@ -107,6 +107,7 @@ model PurchaseHistory {
   cartId     String
   cart       Cart     @relation(fields: [cartId], references: [id])
   total      Float
+  createdAt  DateTime @default(now())
 }
 
 model Review {
