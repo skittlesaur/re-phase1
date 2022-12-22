@@ -26,6 +26,7 @@ import viewOwnComplaints from './controllers/user/customer/view-own-complaints'
 import writeComplaint from './controllers/user/customer/write-complaint'
 import writeReview from './controllers/user/customer/write-review'
 import updateProfile from './controllers/user/update-profile'
+import logout from './controllers/user/logout'
 
 dotenv.config()
 const PORT = process.env.PORT
@@ -58,6 +59,7 @@ server.post('/products/search', searchProducts)
 
 server.post('/user/login', login)
 server.post('/user/register', register)
+server.post('/user/logout', logout)
 
 // authenticated user
 server.use(authenticatedUserMiddleware)

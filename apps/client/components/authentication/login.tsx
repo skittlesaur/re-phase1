@@ -1,43 +1,45 @@
-import api from "@lib/api";
-import Router, { useRouter } from "next/router";
-import toast from "react-hot-toast";
-import { useMutation } from "react-query";
+import api from '@lib/api'
+import Router, { useRouter } from 'next/router'
+import toast from 'react-hot-toast'
+import { useMutation, useQueryClient } from 'react-query'
 
 const Login = () => {
-  const router = useRouter();
+  const queryClient = useQueryClient()
+  const router = useRouter()
 
   const mutation = useMutation({
-    mutationKey: "login",
+    mutationKey: 'login',
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       api
-        .post("/user/login", {
+        .post('/user/login', {
           email: email,
           password: password,
         })
         .then((res) => res.data),
     retry: 0,
-    onSuccess: () => {
-      Router.push("/");
+    onSuccess: async () => {
+      await queryClient.invalidateQueries('user')
+      router.push('/')
     },
     onError: (e: any) => {
-      toast.error(e.response?.data.error);
+      toast.error(e.response?.data.error)
     },
-  });
+  })
 
   const submitHandler = (e: any) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const email = e.target[0].value;
-    const password = e.target[1].value;
+    const email = e.target[0].value
+    const password = e.target[1].value
 
     if (!email) {
-      return toast.error("please enter an email address");
+      return toast.error('please enter an email address')
     }
 
-    if (!password) return toast.error("please insert a password");
+    if (!password) return toast.error('please insert a password')
 
-    mutation.mutate({ email, password });
-  };
+    mutation.mutate({ email, password })
+  }
 
   return (
     <div>
@@ -55,7 +57,7 @@ const Login = () => {
         <button type="submit">Login</button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login
