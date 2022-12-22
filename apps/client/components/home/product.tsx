@@ -87,7 +87,7 @@ const Product = ({ product }: any) => {
                 onClick={() => handleRating(i + 1)}
                 key={i}
                 onMouseEnter={() => setHoveredStar(i)}
-                className={`cursor-pointer w-4 aspect-square transition-all duration-300 ease-in-out ${hoveredStar !== -1 && hoveredStar < i ? 'opacity-50' : 'opacity-100'} ${i + 1 <= Math.round(product.rating.average) ? `${product.rating?.ids?.includes(user?.id ?? '') ? 'fill-yellow-600' : 'fill-yellow-500'}` : 'fill-gray-600/50'}`}
+                className={`cursor-pointer w-4 aspect-square ${ratingMutation.isLoading ? 'animate-pulse' : ''} transition-all duration-300 ease-in-out ${hoveredStar !== -1 && hoveredStar < i ? 'opacity-50' : 'opacity-100'} ${i + 1 <= Math.round(product.rating.average) ? `${product.rating?.ids?.includes(user?.id ?? '') ? 'fill-yellow-600' : 'fill-yellow-500'}` : 'fill-gray-600/50'}`}
               />
             ))}
           </div>
