@@ -78,6 +78,9 @@ class ProductHelper {
     const prisma = new PrismaClient()
 
     const products = await prisma.product.findMany({
+      where: {
+        deleted: false,
+      },
       select: {
         id: true,
         name: true,

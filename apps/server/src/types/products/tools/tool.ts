@@ -14,27 +14,22 @@ abstract class Tool extends Product {
   async createRecord(): Promise<any> {
     const prisma = new PrismaClient()
 
-    const toolPromise = prisma.tool.create({
+    const product = await prisma.tool.create({
       data: {
-        id: this.id,
         toolType: this.toolType,
+        product: {
+          create: {
+            productSellerId: this.sellerId,
+            name: this.name,
+            price: Number.parseFloat(this.price.toString()),
+            category: this.category,
+            stock: Number.parseInt(this.stock.toString()),
+          },
+        },
       },
     })
 
-    const productPromise = prisma.product.create({
-      data: {
-        id: this.id,
-        name: this.name,
-        price: this.price,
-        category: this.category,
-        stock: this.stock,
-        productSellerId: this.sellerId,
-      },
-    })
-
-    await Promise.all([toolPromise, productPromise])
-
-    return this
+    return product
   }
 
   async fetchData(): Promise<any> {

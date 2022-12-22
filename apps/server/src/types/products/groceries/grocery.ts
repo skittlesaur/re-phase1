@@ -5,37 +5,33 @@ import { PrismaClient } from '@prisma/client'
 
 abstract class Grocery extends Product {
   groceryType: GroceryType
+  sellerId: string
 
   constructor(sellerId: string, name: string, price: number, stock: number, groceryType: GroceryType) {
     super(sellerId, name, price, ProductCategory.GROCERIES, stock)
     this.groceryType = groceryType
+    this.sellerId = sellerId
   }
 
   async createRecord(): Promise<any> {
     const prisma = new PrismaClient()
 
-    const groceryPromise = prisma.grocery.create({
+    const product = await prisma.grocery.create({
       data: {
-        id: this.id,
         groceryType: this.groceryType,
+        product: {
+          create: {
+            productSellerId: this.sellerId,
+            name: this.name,
+            price: Number.parseFloat(this.price.toString()),
+            category: this.category,
+            stock: Number.parseInt(this.stock.toString()),
+          },
+        },
       },
     })
 
-    const productPromise = prisma.product.create({
-      data: {
-        id: this.id,
-        name: this.name,
-        price: this.price,
-        category: this.category,
-        stock: this.stock,
-        productSellerId: this.sellerId,
-      },
-    })
-
-    await Promise.all([groceryPromise, productPromise])
-
-    return this
-
+    return product
   }
 }
 

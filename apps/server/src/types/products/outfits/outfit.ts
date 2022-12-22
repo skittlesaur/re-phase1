@@ -18,34 +18,24 @@ abstract class Outfits extends Product {
 
   async createRecord(): Promise<any> {
     const prisma = new PrismaClient()
-    const outfitPromise = prisma.outfits.create({
+
+    const product = await prisma.outfits.create({
       data: {
-        id: this.id,
-        outfitType: this.outfitType as OutfitType,
+        outfitType: this.outfitType,
+        product: {
+          create: {
+            productSellerId: this.sellerId,
+            name: this.name,
+            price: Number.parseFloat(this.price.toString()),
+            category: this.category,
+            stock: Number.parseInt(this.stock.toString()),
+          },
+        },
       },
     })
 
-    const productPromise = prisma.product.create({
-      data: {
-        id: this.id,
-        name: this.name,
-        price: this.price,
-        category: this.category,
-        stock: this.stock,
-        productSellerId: this.sellerId,
-      },
-    })
-
-    //await Promise.all([outfitPromise, productPromise])
-
-    await prisma.$disconnect()
-
-    return this
-
-  }/*
-fetchData(): Promise<any> {
-  this.outfitType = this.outfitType
-}*/
+    return product
+  }
 }
 
 export default Outfits

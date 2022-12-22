@@ -61,13 +61,28 @@ class ProductsSeller extends User {
   async removeProduct(id: string): Promise<any> {
     const prisma = new PrismaClient()
 
-    const product = await prisma.product.delete({
+    const product = await prisma.product.findUnique({
       where: {
-        id: id,
+        id,
       },
     })
 
-    return product
+    if (!product)
+      throw new Error('Cannot find this product')
+
+    if (product.productSellerId !== this.id)
+      throw new Error('You are not the owner of this product')
+
+    const removedProduct = await prisma.product.update({
+      where: {
+        id,
+      },
+      data: {
+        deleted: true,
+      },
+    })
+
+    return removedProduct
   }
 
   async viewProductInsights(): Promise<any> {
@@ -76,6 +91,7 @@ class ProductsSeller extends User {
     const insights = await prisma.product.findMany({
       where: {
         productSellerId: this.id,
+        deleted: false,
       },
       select: {
         id: true,
@@ -97,6 +113,37 @@ class ProductsSeller extends User {
       throw new Error('Cannot find this product\'s seller')
 
     return insights
+  }
+
+  async editProduct(id: string, name: string, price: number, stock: number): Promise<any> {
+    const prisma = new PrismaClient()
+
+    const product = await prisma.product.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!product)
+      throw new Error('Cannot find this product')
+
+    if (product.productSellerId !== this.id)
+      throw new Error('You are not the owner of this product')
+
+    let updates: any = {}
+
+    if (name) updates.name = name
+    if (stock) updates.stock = stock
+    if (price) updates.price = price
+
+    const editedProduct = await prisma.product.update({
+      where: {
+        id,
+      },
+      data: updates,
+    })
+
+    return editedProduct
   }
 }
 

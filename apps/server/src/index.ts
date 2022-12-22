@@ -33,6 +33,8 @@ import ToolType from './types/products/tools/tool-type'
 import bcrypt from 'bcrypt'
 import viewProductInsights from './controllers/user/products-seller/product-insights'
 import addProduct from './controllers/user/products-seller/add-product'
+import editProduct from './controllers/user/products-seller/edit-product'
+import removeProduct from './controllers/user/products-seller/remove-product'
 
 dotenv.config()
 const PORT = process.env.PORT
@@ -91,6 +93,9 @@ server.post('/user/customer-service/reply', userRole(UserRole.CUSTOMER_SERVICE),
 // Authenticated Seller
 server.get('/user/seller/products', userRole(UserRole.PRODUCTS_SELLER), viewProductInsights)
 server.post('/user/seller/products', userRole(UserRole.PRODUCTS_SELLER), addProduct)
+server.put('/user/seller/products', userRole(UserRole.PRODUCTS_SELLER), editProduct)
+server.delete('/user/seller/products/:id', userRole(UserRole.PRODUCTS_SELLER), removeProduct)
+
 
 server.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`)

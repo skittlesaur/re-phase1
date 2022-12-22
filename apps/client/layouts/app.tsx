@@ -21,7 +21,7 @@ const AppLayout = ({ children, currentPage, search, isSearching }: AppProps) => 
     return true
   }, [router.pathname, user])
 
-  if (!isPathAllowed) {
+  if (!isLoading && !isPathAllowed) {
     router.push('/seller')
     return <></>
   }

@@ -24,8 +24,9 @@ model Product {
   Grocery         Grocery?
   Outfits         Outfits?
   createdAt       DateTime        @default(now())
-  productSeller         ProductSeller   @relation(fields: [productSellerId], references: [id])
+  productSeller   ProductSeller   @relation(fields: [productSellerId], references: [id])
   productSellerId String
+  deleted         Boolean         @default(false)
 }
 
 model Tool {
@@ -35,9 +36,9 @@ model Tool {
 }
 
 model Grocery {
-  id             String      @id @default(cuid()) @map("_id")
-  product        Product     @relation(fields: [id], references: [id])
-  groceryType    GroceryType
+  id          String      @id @default(cuid()) @map("_id")
+  product     Product     @relation(fields: [id], references: [id])
+  groceryType GroceryType
 }
 
 model Outfits {
@@ -70,8 +71,8 @@ model Customer {
 }
 
 model ProductSeller {
-  id      String    @id @default(cuid()) @map("_id")
-  user    User      @relation(fields: [id], references: [id])
+  id       String    @id @default(cuid()) @map("_id")
+  user     User      @relation(fields: [id], references: [id])
   products Product[]
 }
 
