@@ -64,12 +64,30 @@ class ProductHelper {
         price: true,
         category: true,
         stock: true,
+        Review: {
+          select: {
+            customerId: true,
+            rating: true,
+          },
+        },
       },
     })
 
     const productInstances = []
 
-    for (const product of products) {
+    for (let product of products) {
+      const productAny = product as any
+      const ratingsSum = product.Review.reduce((acc, review) => acc + review.rating, 0)
+      const ratingsCount = product.Review.length
+      const averageRating = ratingsSum / ratingsCount
+      const rating = {
+        average: averageRating,
+        count: ratingsCount,
+        ids: product.Review.map(review => review.customerId),
+      }
+
+      delete productAny.Review
+
       if (product.category === ProductCategory.TOOLS) {
         const tool = await prisma.tool.findUnique({
           where: {
@@ -81,8 +99,9 @@ class ProductHelper {
           throw new Error('Tool not found')
 
         productInstances.push({
-          ...product,
+          ...productAny,
           ...tool,
+          rating,
         })
       } else if (product.category === ProductCategory.OUTFITS) {
         // @todo
@@ -92,7 +111,7 @@ class ProductHelper {
         //   },
         // })
         // productInstances.push({
-        //   ...product,
+        //   ...productAny,
         //   ...outfit,
         // })
       } else if (product.category === ProductCategory.GROCERIES) {
@@ -103,8 +122,9 @@ class ProductHelper {
         })
 
         productInstances.push({
-          ...product,
+          ...productAny,
           ...grocery,
+          rating,
         })
       }
     }

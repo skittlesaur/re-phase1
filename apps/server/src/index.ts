@@ -72,7 +72,7 @@ server.get('/user/customer/complaint', userRole(UserRole.CUSTOMER), viewComplain
 server.post('/user/customer/reply', userRole(UserRole.CUSTOMER), reply)
 server.get('/user/customer/myComplaints', userRole(UserRole.CUSTOMER), viewOwnComplaints)
 server.post('/user/customer/writeComplaint', userRole(UserRole.CUSTOMER), writeComplaint)
-server.post('/user/customer/writeReview', userRole(UserRole.CUSTOMER), writeReview)
+server.post('/user/customer/review', userRole(UserRole.CUSTOMER), writeReview)
 
 // Authenticated Customer Service 
 server.get('/user/customer-service/', userRole(UserRole.CUSTOMER_SERVICE), viewAllComplaints)

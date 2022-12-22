@@ -328,7 +328,7 @@ class Customer extends User {
     return reply
   }
 
-  async writeReview(productId: string, rating: number, comment: string): Promise<any> {
+  async writeReview(productId: string, rating: number): Promise<any> {
     const prisma = new PrismaClient()
 
     const review = await prisma.review.create({
@@ -344,7 +344,6 @@ class Customer extends User {
           },
         },
         rating: rating,
-        comment: comment,
       },
     })
 
