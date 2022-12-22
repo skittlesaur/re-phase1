@@ -1,6 +1,4 @@
 import { Request, Response } from 'express'
-import User from '../../types/users/user'
-import UserFactory from '../../factories/user-factory'
 import UserHelper from '../../types/users/helper'
 
 const register = async (req: Request, res: Response) => {
@@ -17,7 +15,10 @@ const register = async (req: Request, res: Response) => {
 
     const token = user.generateToken()
 
-    res.cookie('token', token, { httpOnly: true })
+    res.cookie('token', token, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    })
 
     const { password: _, ...userWithoutPassword } = user
     res.status(200).json(userWithoutPassword)
