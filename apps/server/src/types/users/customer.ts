@@ -222,6 +222,7 @@ class Customer extends User {
       select: {
         date: true,
         title: true,
+        text: true,
         status: true,
         author: {
           select: {
