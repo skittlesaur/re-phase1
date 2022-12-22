@@ -26,11 +26,6 @@ import writeComplaint from './controllers/user/customer/write-complaint'
 import writeReview from './controllers/user/customer/write-review'
 import updateProfile from './controllers/user/update-profile'
 import logout from './controllers/user/logout'
-import purchaseHistory from './controllers/user/customer/history'
-import { PrismaClient } from '@prisma/client'
-import ProductCategory from './types/products/product-category'
-import ToolType from './types/products/tools/tool-type'
-import bcrypt from 'bcrypt'
 import viewProductInsights from './controllers/user/products-seller/product-insights'
 import addProduct from './controllers/user/products-seller/add-product'
 import editProduct from './controllers/user/products-seller/edit-product'
@@ -73,28 +68,28 @@ server.use(authenticatedUserMiddleware)
 server.get('/user', getUser)
 server.put('/user', updateProfile)
 server.get('/user/verify', verify)
-server.post('/user/customer/purchase', userRole(UserRole.CUSTOMER), purchase)
-server.get('/user/customer/cart', userRole(UserRole.CUSTOMER), cart)
-server.post('/user/customer/cart', userRole(UserRole.CUSTOMER), addCart)
-server.delete('/user/customer/cart', userRole(UserRole.CUSTOMER), removeCart)
-server.get('/user/customer/history', userRole(UserRole.CUSTOMER), purchaseHistory)
-server.get('/user/customer/complaint', userRole(UserRole.CUSTOMER), viewComplaint)
-server.post('/user/customer/reply', userRole(UserRole.CUSTOMER), reply)
-server.get('/user/customer/myComplaints', userRole(UserRole.CUSTOMER), viewOwnComplaints)
-server.post('/user/customer/writeComplaint', userRole(UserRole.CUSTOMER), writeComplaint)
-server.post('/user/customer/review', userRole(UserRole.CUSTOMER), writeReview)
+server.post('/user/customer/purchase', userRole([UserRole.CUSTOMER]), purchase)
+server.get('/user/customer/cart', userRole([UserRole.CUSTOMER]), cart)
+server.post('/user/customer/cart', userRole([UserRole.CUSTOMER]), addCart)
+server.delete('/user/customer/cart', userRole([UserRole.CUSTOMER]), removeCart)
+server.get('/user/customer/myComplaints', userRole([UserRole.CUSTOMER]), viewOwnComplaints)
+server.post('/user/customer/writeComplaint', userRole([UserRole.CUSTOMER]), writeComplaint)
+server.post('/user/customer/review', userRole([UserRole.CUSTOMER]), writeReview)
 
 // Authenticated Customer Service 
-server.get('/user/customer-service/', userRole(UserRole.CUSTOMER_SERVICE), viewAllComplaints)
-server.put('/user/customer-service/status', userRole(UserRole.CUSTOMER_SERVICE), updateComplaints)
-server.get('/user/customer-service/complaint', userRole(UserRole.CUSTOMER_SERVICE), viewComplaint)
-server.post('/user/customer-service/reply', userRole(UserRole.CUSTOMER_SERVICE), reply)
+server.get('/user/customer-service/', userRole([UserRole.CUSTOMER_SERVICE]), viewAllComplaints)
+server.put('/user/customer-service/status', userRole([UserRole.CUSTOMER_SERVICE]), updateComplaints)
+
+
+//shared endpoints
+server.get('/user/complaint/:complaintId', userRole([UserRole.CUSTOMER, UserRole.CUSTOMER_SERVICE]), viewComplaint)
+server.post('/user/reply', userRole([UserRole.CUSTOMER, UserRole.CUSTOMER_SERVICE]), reply)
 
 // Authenticated Seller
-server.get('/user/seller/products', userRole(UserRole.PRODUCTS_SELLER), viewProductInsights)
-server.post('/user/seller/products', userRole(UserRole.PRODUCTS_SELLER), addProduct)
-server.put('/user/seller/products', userRole(UserRole.PRODUCTS_SELLER), editProduct)
-server.delete('/user/seller/products/:id', userRole(UserRole.PRODUCTS_SELLER), removeProduct)
+server.get('/user/seller/products', userRole([UserRole.PRODUCTS_SELLER]), viewProductInsights)
+server.post('/user/seller/products', userRole([UserRole.PRODUCTS_SELLER]), addProduct)
+server.put('/user/seller/products', userRole([UserRole.PRODUCTS_SELLER]), editProduct)
+server.delete('/user/seller/products/:id', userRole([UserRole.PRODUCTS_SELLER]), removeProduct)
 
 
 server.listen(PORT, () => {

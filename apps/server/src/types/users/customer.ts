@@ -3,25 +3,20 @@ import { Cart, PrismaClient, PurchaseHistory, Review, UserRole } from '@prisma/c
 import Product from '../products/product'
 import generateId from '../../lib/generate-id'
 import cart from '../../controllers/user/customer/cart'
-
 class Customer extends User {
   cart?: Cart
   purchaseHistory?: PurchaseHistory[]
   reviews?: Review[]
-
   constructor(email: string, password?: string, name?: string) {
     super(UserRole.CUSTOMER, email, password, name)
   }
-
   async addCart(product: Product, quantity: number = 1): Promise<any> {
     const prisma = new PrismaClient()
-
     const cartExists = this.cart && await prisma.cart.findUnique({
       where: {
         id: this.cart?.id ?? '',
       },
     })
-
     if (!cartExists) {
       const cart = await prisma.cart.create({
         data: {
@@ -33,13 +28,10 @@ class Customer extends User {
           },
         },
       })
-
       this.cart = cart
     }
-
     if (!this.cart)
       throw new Error('Cart not found')
-
     const cartHasProduct = await prisma.cart.findFirst({
       where: {
         id: this.cart?.id,
@@ -50,7 +42,6 @@ class Customer extends User {
         },
       },
     })
-
     if (cartHasProduct) {
       const cartItem = await prisma.cartItem.findFirst({
         where: {
@@ -58,7 +49,6 @@ class Customer extends User {
           productId: product.id,
         },
       })
-
       if (cartItem) {
         await prisma.cartItem.update({
           where: {
@@ -72,7 +62,6 @@ class Customer extends User {
         })
       }
     }
-
     if (!cartHasProduct) {
       await prisma.cartItem.create({
         data: {
@@ -83,23 +72,18 @@ class Customer extends User {
         },
       })
     }
-
     return this
   }
-
   async removeCart(product: Product, quantity: number = 1): Promise<any> {
     const prisma = new PrismaClient()
-
     const cartItem = await prisma.cartItem.findFirst({
       where: {
         cartId: this.cart?.id,
         productId: product.id,
       },
     })
-
     if (!cartItem)
       throw new Error('Product not found in cart')
-
     if (cartItem.quantity <= quantity) {
       await prisma.cartItem.delete({
         where: {
@@ -118,13 +102,10 @@ class Customer extends User {
         },
       })
     }
-
     return this
   }
-
   async fetchData(): Promise<any> {
     const prisma = new PrismaClient()
-
     const customer = await prisma.customer.findUnique({
       where: {
         id: this.id,
@@ -135,20 +116,15 @@ class Customer extends User {
         reviews: true,
       },
     })
-
     if (!customer)
       throw new Error('User is not a customer')
-
     if (customer.cart) this.cart = customer.cart
     this.purchaseHistory = customer.purchaseHistory
     this.reviews = customer.reviews
-
     return this
   }
-
   async purchase() {
     const prisma = new PrismaClient()
-
     const cart = await prisma.cart.findUnique({
       where: {
         id: this.cart?.id ?? '',
@@ -161,18 +137,14 @@ class Customer extends User {
         },
       },
     })
-
     if (!cart)
       throw new Error('Cart not found')
-
     let total = 0
     for (const cartItem of cart.cartItems) {
       if (cartItem.product.stock < cartItem.quantity)
         throw new Error(`Product ${cartItem.product.name} has insufficient stock`)
-
       total += cartItem.product.price * cartItem.quantity
     }
-
     const purchaseHistory = await prisma.purchaseHistory.create({
       data: {
         total,
@@ -189,7 +161,6 @@ class Customer extends User {
         },
       },
     })
-
     for (const cartItem of cart.cartItems) {
       await prisma.product.update({
         where: {
@@ -202,31 +173,33 @@ class Customer extends User {
         },
       })
     }
-
     await prisma.cart.delete({
       where: {
         id: cart.id,
       },
     })
-
     return purchaseHistory
   }
-
   async viewOwnComplaints(): Promise<any> {
     const prisma = new PrismaClient()
-
     const complaints = await prisma.complaint.findMany({
       where: {
         authorId: this.id,
       },
       select: {
+        id: true,
         date: true,
         title: true,
+        text: true,
         status: true,
         author: {
           select: {
-            email: true,
-            name: true,
+            user: {
+              select: {
+                email: true,
+                name: true,
+              },
+            },
           },
         },
       },
@@ -234,14 +207,10 @@ class Customer extends User {
         date: 'desc',
       },
     })
-
     return complaints
-
   }
-
   async viewComplaint(complaintId: string): Promise<any> {
     const prisma = new PrismaClient()
-
     const complaint = await prisma.complaint.findUnique({
       where: {
         id: complaintId,
@@ -253,8 +222,12 @@ class Customer extends User {
         status: true,
         author: {
           select: {
-            email: true,
-            name: true,
+            user: {
+              select: {
+                email: true,
+                name: true,
+              },
+            },
           },
         },
         replies: {
@@ -269,21 +242,17 @@ class Customer extends User {
             },
           },
           orderBy: {
-            date: 'desc',
+            date: 'asc',
           },
         },
       },
     })
-
     if (!complaint)
       throw new Error('Cannot find this complaint')
-
     return complaint
   }
-
   async writeComplaint(title: string, text: string): Promise<any> {
     const prisma = new PrismaClient()
-
     const complaint = await prisma.complaint.create({
       data: {
         title: title,
@@ -296,16 +265,12 @@ class Customer extends User {
         },
       },
     })
-
     if (!complaint)
       throw new Error('reply creation failed')
-
     return complaint
   }
-
   async writeReply(text: string, complaintId: string): Promise<any> {
     const prisma = new PrismaClient()
-
     const reply = await prisma.reply.create({
       data: {
         text: text,
@@ -319,18 +284,19 @@ class Customer extends User {
             id: complaintId,
           },
         },
+        customer: {
+          connect: {
+            id: this.id
+          },
+        },
       },
     })
-
     if (!reply)
       throw new Error('reply creation failed')
-
     return reply
   }
-
   async writeReview(productId: string, rating: number): Promise<any> {
     const prisma = new PrismaClient()
-
     const review = await prisma.review.create({
       data: {
         customer: {
@@ -343,31 +309,24 @@ class Customer extends User {
             id: productId,
           },
         },
-        rating: rating,
+        rating: rating
       },
     })
-
     if (!review)
       throw new Error('review creation failed')
-
     return review
   }
-
   async create(): Promise<any> {
     const prisma = new PrismaClient()
-
     const customer = await prisma.customer.create({
       data: {
         id: this.id,
       },
     })
-
     return this
   }
-
   async getPurchaseHistory(): Promise<any> {
     const prisma = new PrismaClient()
-
     const purchases = await prisma.purchaseHistory.findMany({
       where: {
         customerId: this.id,
@@ -382,9 +341,7 @@ class Customer extends User {
         createdAt: 'desc',
       },
     })
-
     return purchases
   }
 }
-
 export default Customer
