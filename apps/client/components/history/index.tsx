@@ -23,10 +23,10 @@ const History = () => {
       <h1 className="text-2xl">
         Order History
       </h1>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-10">
         {history.map((order: any) => (
-          <div className="flex flex-col gap-4 border border-gray-200 rounded-lg px-6 py-4">
-            <div className="flex flex-col">
+          <div className="flex flex-col gap-2 border border-gray-200 rounded-lg">
+            <div className="flex flex-col bg-gray-100 px-8 py-3">
               <h2 className="text-lg">
                 Order #{order.id}
               </h2>
@@ -34,9 +34,9 @@ const History = () => {
                 {formatDate(order.createdAt)}
               </p>
             </div>
-            <div className="flex flex-col gap-2 px-4">
-              {order.items.map((item: any) => (
-                <div className="flex items-center justify-between gap-2 border-t border-gray-200 py-2">
+            <div className="flex flex-col gap-2 px-8">
+              {order.items.map((item: any, idx: number) => (
+                <div className={`flex items-center justify-between gap-2 ${idx === 0 ? '' : 'border-t border-gray-200'} py-2`}>
                   <div className="flex flex-col">
                     <h3>
                       {item.productName}
@@ -51,7 +51,7 @@ const History = () => {
                 </div>
               ))}
             </div>
-            <div className="flex justify-end px-4 font-medium">
+            <div className="flex justify-end px-8 font-medium py-3">
               <p className="text-lg">
                 Total: ${order.total}
               </p>
