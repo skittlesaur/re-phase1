@@ -31,6 +31,10 @@ const AllChats = ({ user }: any) => {
     e.preventDefault()
     const title = e.target[0].value
     const text = e.target[1].value
+
+    if (!title) return toast.error('Complaint title is required')
+    if (!text) return toast.error('Complaint message is required')
+
     mutation.mutate({ title, text })
   }
 
@@ -42,6 +46,7 @@ const AllChats = ({ user }: any) => {
       day: 'numeric',
     })
   }
+
   return (
     <div className="flex flex-col gap-10">
       {user.role === 'CUSTOMER' && (
@@ -49,21 +54,21 @@ const AllChats = ({ user }: any) => {
           <input
             name="title"
             type="text"
-            placeholder="add title to your complaint"
+            placeholder="Complaint title"
             className="border border-gray-300 rounded-md px-4 py-2"
-          ></input>
+          />
           <input
             name="body"
             type="text"
-            placeholder="add new complaint"
+            placeholder="Complaint message"
             className="border border-gray-300 rounded-md px-4 py-2"
-          ></input>
+          />
           <button
             disabled={mutation.isLoading}
             type="submit"
-            className="border border-black text-black rounded-md px-4 py-2 text-sm hover:text-white hover:bg-black transition-all duration-200 ease-in-out"
+            className="uppercase border border-black disabled:bg-gray-800 h-10 text-black rounded-md px-4 py-2 text-sm hover:text-white hover:bg-black transition-all duration-200 ease-in-out"
           >
-            {/*{mutation.isLoading ? <Loader full={false} /> : 'Submit Complaint'}*/}
+            {mutation.isLoading ? <Loader full={false} /> : 'Submit Complaint'}
           </button>
         </form>
       )}
