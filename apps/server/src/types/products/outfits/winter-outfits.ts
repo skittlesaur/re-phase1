@@ -1,13 +1,11 @@
+import { PrismaClient } from '@prisma/client'
 import Outfits from './outfit'
 import OutfitType from './outfit-type'
 
-class WinterOutfits extends Outfits{
-    fetchData(): Promise<any> {
-        throw new Error('Method not implemented.')
-    }
-    
-    constructor(name: string, price: number, stock: number){
-        super(name, price, stock, OutfitType.WINTER_OUTFITS)
-    }
+class WinterOutfits extends Outfits {
+  constructor(sellerId: string, name: string, price: number, stock: number) {
+    super(sellerId, name, price, stock, OutfitType.WINTER_OUTFITS)
+  }
 }
+
 export default WinterOutfits

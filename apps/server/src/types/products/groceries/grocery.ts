@@ -1,44 +1,57 @@
-import Product from '../product';
+import Product from '../product'
 import GroceryType from './grocery-type';
-import ProductCategory from '../product-category';
-import { PrismaClient } from '@prisma/client';
+import ProductCategory from '../product-category'
+import { PrismaClient } from '@prisma/client'
 
 abstract class Grocery extends Product {
-    groceryType: GroceryType
-    expirationDate: Date
+  groceryType: GroceryType
+  sellerId: string
 
-    constructor(name: string, price: number, stock: number, groceryType: GroceryType, expirationDate: Date) {
-        super(name, price, ProductCategory.GROCERIES, stock)
-        this.groceryType = groceryType
-        this.expirationDate = expirationDate
-    }
+  constructor(sellerId: string, name: string, price: number, stock: number, groceryType: GroceryType) {
+    super(sellerId, name, price, ProductCategory.GROCERIES, stock)
+    this.groceryType = groceryType
+    this.sellerId = sellerId
+  }
 
-    async createRecord(): Promise<any> {
-        const prisma = new PrismaClient()
+  async createRecord(): Promise<any> {
+    const prisma = new PrismaClient()
 
-        const groceryPromise = prisma.grocery.create({
-            data: {
-                id: this.id,
-                groceryType: this.groceryType,
-                expirationDate: this.expirationDate,
-            },
-        })
+    const product = await prisma.grocery.create({
+      data: {
+        groceryType: this.groceryType,
+        product: {
+          create: {
+            productSellerId: this.sellerId,
+            name: this.name,
+            price: Number.parseFloat(this.price.toString()),
+            category: this.category,
+            stock: Number.parseInt(this.stock.toString()),
+          },
+        },
+      },
+    })
 
-        const productPromise = prisma.product.create({
-            data: {
-                id: this.id,
-                name: this.name,
-                price: this.price,
-                category: this.category,
-                stock: this.stock,
-            },
-        })
+    return product
+  }
 
-        await Promise.all([groceryPromise, productPromise])
 
-        return this
+  async fetchData(): Promise<any> {
+    const prisma = new PrismaClient()
 
-    }
+    const grocery = await prisma.grocery.findUnique({
+      where: {
+        id: this.id,
+      },
+      select: {
+        groceryType: true
+      },
+    })
+
+    if (!grocery)
+      throw new Error('User is not a customer')
+
+    return this
+  }
 }
 
 export default Grocery

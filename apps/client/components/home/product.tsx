@@ -73,6 +73,8 @@ const Product = ({ product }: any) => {
           {product.category.toLowerCase()}
           <ChevronForwardIcon className="w-3 aspect-square fill-current" />
           {product.toolType?.replace('_', ' ').toLowerCase()}
+          {product.groceryType?.replace('_', ' ').toLowerCase()}
+          {product.outfitType?.replace('_', ' ').toLowerCase()}
         </p>
         <p>
           {product.name}

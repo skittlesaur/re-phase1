@@ -4,19 +4,13 @@ import HandTool from '../types/products/tools/hand-tool'
 import IFactory from './ifactory'
 import PowerTool from '../types/products/tools/power-tool'
 
-interface ToolProps {
-  name: string
-  price: number
-  stock: number
-}
-
 class ToolFactory implements IFactory {
-  create(tool: ToolType, props: ToolProps): Tool {
+  create(sellerId: string, tool: ToolType, name: string, price: number, stock: number): Tool {
     switch (tool) {
       case ToolType.HAND_TOOL:
-        return new HandTool(props.name, props.price, props.stock)
+        return new HandTool(sellerId, name, price, stock)
       case ToolType.POWER_TOOL:
-        return new PowerTool(props.name, props.price, props.stock)
+        return new PowerTool(sellerId, name, price, stock)
       default:
         throw new Error('Invalid tool type')
     }

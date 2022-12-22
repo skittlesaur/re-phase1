@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import useUser from '@hooks/use-user'
 import useCart from '@hooks/use-cart'
+import { useRouter } from 'next/router'
 
 const pages = [
   {
@@ -18,6 +19,8 @@ const pages = [
   },
 ]
 
+const sellerPages: any = []
+
 interface NavProps {
   currentPage?: 'home' | 'contact' | 'other'
   search?: (query: string) => void
@@ -28,6 +31,10 @@ const Nav = ({ currentPage = 'other', search = () => {}, isSearching = false }: 
   const [isSearchActive, setIsSearchActive] = useState(false)
   const { user, isError: userError } = useUser()
   const { cart } = useCart()
+
+  const isSeller = useMemo(() => {
+    return user?.role === 'PRODUCTS_SELLER'
+  }, [user])
 
   const countItems = useMemo(() => {
     if (!cart) return 0
@@ -58,7 +65,17 @@ const Nav = ({ currentPage = 'other', search = () => {}, isSearching = false }: 
         <div className="flex items-center gap-6">
           <nav>
             <ul className="flex items-center gap-2 text-sm">
-              {pages.map(page => (
+              {!isSeller && pages.map(page => (
+                <li key={page.href}>
+                  <Link
+                    className={`${currentPage === page.title.toLowerCase() ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'}  transition-colors duration-200 ease-in-out`}
+                    href={page.href}
+                  >
+                    {page.title}
+                  </Link>
+                </li>
+              ))}
+              {isSeller && sellerPages.map((page: any) => (
                 <li key={page.href}>
                   <Link
                     className={`${currentPage === page.title.toLowerCase() ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'}  transition-colors duration-200 ease-in-out`}
@@ -132,12 +149,14 @@ const Nav = ({ currentPage = 'other', search = () => {}, isSearching = false }: 
                     >
                       Profile
                     </Link>
-                    <Link
-                      className="w-full px-4 text-sm py-2 hover:bg-gray-100"
-                      href="/history"
-                    >
-                      Orders
-                    </Link>
+                    {user?.role === 'CUSTOMER' && (
+                      <Link
+                        className="w-full px-4 text-sm py-2 hover:bg-gray-100"
+                        href="/history"
+                      >
+                        Orders
+                      </Link>
+                    )}
                     <Link
                       className="w-full px-4 text-sm py-2 hover:bg-gray-100"
                       href="/logout"

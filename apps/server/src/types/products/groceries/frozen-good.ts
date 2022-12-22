@@ -1,10 +1,10 @@
-import Grocery from "./grocery"
-import GroceryType from './grocery-type';
+import Grocery from './grocery'
+import GroceryType from './grocery-type'
 
 class FrozenGood extends Grocery {
-    constructor(name: string, price: number, stock: number, expirationDate: Date) {
-        super(name, price, stock, GroceryType.FROZEN_GOOD, expirationDate)
-    }
+  constructor(sellerId: string, name: string, price: number, stock: number) {
+    super(sellerId, name, price, stock, GroceryType.FROZEN_GOOD)
+  }
 }
 
 export default FrozenGood

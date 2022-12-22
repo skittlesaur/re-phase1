@@ -78,6 +78,9 @@ class ProductHelper {
     const prisma = new PrismaClient()
 
     const products = await prisma.product.findMany({
+      where: {
+        deleted: false,
+      },
       select: {
         id: true,
         name: true,
@@ -124,16 +127,17 @@ class ProductHelper {
           rating,
         })
       } else if (product.category === ProductCategory.OUTFITS) {
-        // @todo
-        // const outfit = await prisma.outfit.findUnique({
-        //   where: {
-        //     id: product.id,
-        //   },
-        // })
-        // productInstances.push({
-        //   ...productAny,
-        //   ...outfit,
-        // })
+        const outfit = await prisma.outfits.findUnique({
+          where: {
+            id: product.id,
+          },
+        })
+
+        productInstances.push({
+          ...productAny,
+          ...outfit,
+          rating,
+        })
       } else if (product.category === ProductCategory.GROCERIES) {
         const grocery = await prisma.grocery.findUnique({
           where: {

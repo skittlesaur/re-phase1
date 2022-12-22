@@ -23,6 +23,7 @@ model Product {
   createdAt       DateTime        @default(now())
   productSeller   ProductSeller   @relation(fields: [productSellerId], references: [id])
   productSellerId String
+  deleted         Boolean         @default(false)
 }
 
 model Tool {
@@ -67,9 +68,8 @@ model Customer {
 }
 
 model ProductSeller {
-  id       String          @id @default(cuid()) @map("_id")
-  user     User            @relation(fields: [id], references: [id])
-  category ProductCategory
+  id       String    @id @default(cuid()) @map("_id")
+  user     User      @relation(fields: [id], references: [id])
   products Product[]
 }
 
@@ -166,7 +166,7 @@ enum GroceryType {
 }
 
 enum UserRole {
-  PRODUCTS_SELLLER
+  PRODUCTS_SELLER
   CUSTOMER_SERVICE
   CUSTOMER
 }

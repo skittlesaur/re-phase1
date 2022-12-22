@@ -4,6 +4,7 @@ import Customer from './customer'
 import User from './user'
 import jwt from 'jsonwebtoken'
 import CustomerService from './customer-service'
+import ProductsSeller from './products-seller'
 
 class UserHelper {
   static async login(email: string, password: string): Promise<any> {
@@ -119,8 +120,13 @@ class UserHelper {
       customerService.name = user.name ?? undefined
       customerService.role = user.role
       user = await customerService.fetchData()
+    } else if (user.role === UserRole.PRODUCTS_SELLER) {
+      const productsSeller = new ProductsSeller(user.email)
+      productsSeller.id = user.id
+      productsSeller.name = user.name ?? undefined
+      productsSeller.role = user.role
+      user = await productsSeller.fetchData()
     }
-    // @todo product seller
 
     return user
   }
