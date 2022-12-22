@@ -2,9 +2,9 @@ import AppLayout from '@layouts/app'
 import Home from '@components/home'
 import SEO from 'ui/seo'
 import api from '@lib/api'
-import { useMutation, useQuery } from 'react-query'
+import { useMutation } from 'react-query'
 
-const HomePage = ({ products }: any) => {
+const HomePage = () => {
   const mutation = useMutation({
     mutationKey: 'search',
     mutationFn: (query: string) => api.post('/products/search', { query }).then((res) => res.data),
@@ -21,21 +21,10 @@ const HomePage = ({ products }: any) => {
         title="factory - Home"
       />
       <Home
-        products={products}
         searchResult={mutation.data}
       />
     </AppLayout>
   )
-}
-
-export const getStaticProps = async () => {
-  const { data: products } = await api.get('/products')
-
-  return {
-    props: {
-      products,
-    },
-  }
 }
 
 export default HomePage

@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt'
 import Customer from './customer'
 import User from './user'
 import jwt from 'jsonwebtoken'
-import CustomerService from './customer-service';
+import CustomerService from './customer-service'
 
 class UserHelper {
   static async login(email: string, password: string): Promise<any> {
@@ -24,27 +24,12 @@ class UserHelper {
     if (!user)
       throw new Error('User not found')
 
-    const isPasswordCorrect = bcrypt.compare(password, user.password)
+    const isPasswordCorrect = await bcrypt.compare(password, user.password)
 
     if (!isPasswordCorrect)
       throw new Error('Incorrect password')
 
-    let userInstance: User | undefined
-
-    if (user.role === UserRole.CUSTOMER)
-      userInstance = new Customer(email, password)
-
-    if (!userInstance)
-      throw new Error('Invalid user role')
-
-
-    userInstance.id = user.id
-    userInstance.email = user.email
-    userInstance.name = user.name ?? undefined
-
-    userInstance = await userInstance.fetchData()
-
-    return userInstance
+    return user
   }
 
   static async register(role: UserRole, email: string, password: string, name?: string): Promise<any> {
@@ -74,39 +59,78 @@ class UserHelper {
     if (userExists)
       throw new Error('User already exists')
 
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: bcrypt.hashSync(password, 10),
-        name,
-        role,
-      },
-    })
+    let user
 
-    let userInstance: User | undefined
+    if (role === UserRole.CUSTOMER) {
+      user = await prisma.customer.create({
+        data: {
+          user: {
+            create: {
+              email,
+              password: await bcrypt.hash(password, 10),
+              name,
+              role,
+            },
+          },
+        },
+      })
+    } else if (role === UserRole.CUSTOMER_SERVICE) {
+      user = await prisma.customerService.create({
+        data: {
+          user: {
+            create: {
+              email,
+              password: await bcrypt.hash(password, 10),
+              name,
+              role,
+            },
+          },
+        },
+      })
+    }
 
-    if (role === UserRole.CUSTOMER)
-      userInstance = new Customer(email, password, name)
+    // @todo product seller
 
-    if (role === UserRole.CUSTOMER_SERVICE)
-      userInstance = new CustomerService(email, password, name)
-
-    if (!userInstance)
-      throw new Error('Invalid user role')
-
-    userInstance.id = user.id
-    userInstance.email = user.email
-    userInstance.name = user.name ?? undefined
-
-    userInstance = await userInstance.create()
-
-    return userInstance
+    return user
   }
 
   static async authenticate(token: string): Promise<any> {
+    const { id } = await this.verifyToken(token) as any
     const prisma = new PrismaClient()
 
-    const { id } = this.verifyToken(token) as any
+    let user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!user)
+      throw new Error('User not found')
+
+    if (user.role === UserRole.CUSTOMER) {
+      const customer = new Customer(user.email)
+      customer.id = user.id
+      customer.name = user.name ?? undefined
+      customer.role = user.role
+      user = await customer.fetchData()
+    } else if (user.role === UserRole.CUSTOMER_SERVICE) {
+      const customerService = new CustomerService(user.email)
+      customerService.id = user.id
+      customerService.name = user.name ?? undefined
+      customerService.role = user.role
+      user = await customerService.fetchData()
+    }
+    // @todo product seller
+
+    return user
+  }
+
+  static verifyToken(token: string) {
+    return jwt.verify(token, process.env.JWT_SECRET ?? '')
+  }
+
+  static async getUser(id: string) {
+    const prisma = new PrismaClient()
 
     const user = await prisma.user.findUnique({
       where: {
@@ -117,28 +141,50 @@ class UserHelper {
     if (!user)
       throw new Error('User not found')
 
-    let userInstance: User | undefined
+    let userInstance: any
 
-    if (user.role === UserRole.CUSTOMER)
-      userInstance = new Customer(user.email, user.password)
+    if (user.role === UserRole.CUSTOMER) {
+      const customer = await prisma.customer.findUnique({
+        where: {
+          id,
+        },
+      })
 
-    if (user.role === UserRole.CUSTOMER_SERVICE)
-      userInstance = new CustomerService(user.email, user.password)
+      if (!customer)
+        throw new Error('Customer not found')
+
+      userInstance = {
+        ...user,
+        ...customer,
+      }
+    }
+
+    if (user.role === UserRole.CUSTOMER_SERVICE) {
+      const customerService = await prisma.customerService.findUnique({
+        where: {
+          id,
+        },
+      })
+
+      if (!customerService)
+        throw new Error('Customer service not found')
+
+      userInstance = {
+        ...user,
+        ...customerService,
+      }
+    }
 
     if (!userInstance)
       throw new Error('Invalid user role')
 
-    userInstance.id = user.id
-    userInstance.email = user.email
-    userInstance.name = user.name ?? undefined
-
-    userInstance = await userInstance.fetchData()
-
     return userInstance
   }
 
-  static verifyToken(token: string) {
-    return jwt.verify(token, process.env.JWT_SECRET ?? '')
+  static generateToken(id: string): string {
+    return jwt.sign({ id }, process.env.JWT_SECRET ?? '', {
+      expiresIn: '1d',
+    })
   }
 }
 

@@ -2,11 +2,12 @@ import User from './user'
 import { Cart, PrismaClient, PurchaseHistory, Review, UserRole } from '@prisma/client'
 import Product from '../products/product'
 import generateId from '../../lib/generate-id'
+import cart from '../../controllers/user/customer/cart'
 
 class Customer extends User {
-  cart: Cart
-  purchaseHistory: PurchaseHistory[]
-  reviews: Review[]
+  cart?: Cart
+  purchaseHistory?: PurchaseHistory[]
+  reviews?: Review[]
 
   constructor(email: string, password?: string, name?: string) {
     super(UserRole.CUSTOMER, email, password, name)
@@ -15,7 +16,7 @@ class Customer extends User {
   async addCart(product: Product, quantity: number = 1): Promise<any> {
     const prisma = new PrismaClient()
 
-    const cartExists = await prisma.cart.findUnique({
+    const cartExists = this.cart && await prisma.cart.findUnique({
       where: {
         id: this.cart?.id ?? '',
       },
@@ -35,6 +36,9 @@ class Customer extends User {
 
       this.cart = cart
     }
+
+    if (!this.cart)
+      throw new Error('Cart not found')
 
     const cartHasProduct = await prisma.cart.findFirst({
       where: {
@@ -171,16 +175,16 @@ class Customer extends User {
 
     const purchaseHistory = await prisma.purchaseHistory.create({
       data: {
-        id: generateId(),
         total,
+        items: cart.cartItems.map(cartItem => ({
+          productId: cartItem.productId,
+          productName: cartItem.product.name,
+          productPrice: cartItem.product.price,
+          quantity: cartItem.quantity,
+        })),
         customer: {
           connect: {
             id: this.id,
-          },
-        },
-        cart: {
-          connect: {
-            id: cart.id,
           },
         },
       },
@@ -213,7 +217,7 @@ class Customer extends User {
 
     const complaints = await prisma.complaint.findMany({
       where: {
-        id: this.id,
+        authorId: this.id,
       },
       select: {
         date: true,
@@ -227,7 +231,7 @@ class Customer extends User {
         },
       },
       orderBy: {
-        date: 'desc'
+        date: 'desc',
       },
     })
 
@@ -251,7 +255,7 @@ class Customer extends User {
           select: {
             email: true,
             name: true,
-          }
+          },
         },
         replies: {
           select: {
@@ -265,7 +269,7 @@ class Customer extends User {
             },
           },
           orderBy: {
-            date: 'desc'
+            date: 'desc',
           },
         },
       },
@@ -278,7 +282,7 @@ class Customer extends User {
   }
 
   async writeComplaint(title: string, text: string): Promise<any> {
-    const prisma = new PrismaClient();
+    const prisma = new PrismaClient()
 
     const complaint = await prisma.complaint.create({
       data: {
@@ -291,12 +295,12 @@ class Customer extends User {
           },
         },
       },
-    });
+    })
 
     if (!complaint)
-      throw new Error("reply creation failed");
+      throw new Error('reply creation failed')
 
-    return complaint;
+    return complaint
   }
 
   async writeReply(text: string, complaintId: string): Promise<any> {
@@ -312,7 +316,7 @@ class Customer extends User {
         },
         complaint: {
           connect: {
-            id: complaintId
+            id: complaintId,
           },
         },
       },
@@ -322,6 +326,31 @@ class Customer extends User {
       throw new Error('reply creation failed')
 
     return reply
+  }
+
+  async writeReview(productId: string, rating: number): Promise<any> {
+    const prisma = new PrismaClient()
+
+    const review = await prisma.review.create({
+      data: {
+        customer: {
+          connect: {
+            id: this.id,
+          },
+        },
+        product: {
+          connect: {
+            id: productId,
+          },
+        },
+        rating: rating,
+      },
+    })
+
+    if (!review)
+      throw new Error('review creation failed')
+
+    return review
   }
 
   async create(): Promise<any> {
@@ -334,6 +363,27 @@ class Customer extends User {
     })
 
     return this
+  }
+
+  async getPurchaseHistory(): Promise<any> {
+    const prisma = new PrismaClient()
+
+    const purchases = await prisma.purchaseHistory.findMany({
+      where: {
+        customerId: this.id,
+      },
+      select: {
+        id: true,
+        total: true,
+        createdAt: true,
+        items: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    return purchases
   }
 }
 

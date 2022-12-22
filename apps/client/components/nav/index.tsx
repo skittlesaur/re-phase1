@@ -19,14 +19,14 @@ const pages = [
 ]
 
 interface NavProps {
-  currentPage: 'home' | 'contact'
-  search: (query: string) => void
+  currentPage?: 'home' | 'contact' | 'other'
+  search?: (query: string) => void
   isSearching?: boolean
 }
 
-const Nav = ({ currentPage, search, isSearching }: NavProps) => {
+const Nav = ({ currentPage = 'other', search = () => {}, isSearching = false }: NavProps) => {
   const [isSearchActive, setIsSearchActive] = useState(false)
-  const { user } = useUser()
+  const { user, isError: userError } = useUser()
   const { cart } = useCart()
 
   const countItems = useMemo(() => {
@@ -42,7 +42,7 @@ const Nav = ({ currentPage, search, isSearching }: NavProps) => {
 
   return (
     <header className="sticky top-0 backdrop-blur border-b border-gray-200">
-      {isSearchActive && (
+      {currentPage !== 'other' && isSearchActive && (
         <div
           onClick={() => {
             setIsSearchActive(false)
@@ -71,39 +71,41 @@ const Nav = ({ currentPage, search, isSearching }: NavProps) => {
             </ul>
           </nav>
           <div className="flex items-center gap-1">
-            <div className="relative min-w-[1.5rem] min-h-[1.5rem]">
-              <AnimatePresence mode="wait">
-                {isSearchActive && (
-                  <motion.input
-                    initial={{ width: 0 }}
-                    animate={{ width: '10rem' }}
-                    exit={{ width: 0 }}
-                    transition={{ duration: 0.05, type: 'tween' }}
-                    key="search-input"
-                    placeholder="Search"
-                    autoComplete="off"
-                    autoCorrect="off"
-                    autoCapitalize="off"
-                    onChange={e => search(e.target.value)}
-                    className="relative pl-8 bg-gray-100 text-gray-500 rounded-full px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-opacity-50"
-                  />
-                )}
-              </AnimatePresence>
-              <button
-                onClick={() => setIsSearchActive(!isSearchActive)}
-                disabled={isSearchActive}
-                className={`absolute ${isSearchActive ? 'left-1' : 'left-0'} top-1/2 -translate-y-1/2 text-gray-500 w-6 p-1 rounded-full hover:bg-gray-200 aspect-square transition-all duration-200 ease-in-out disabled:hover:bg-inherit`}
-              >
-                {!isSearching && <SearchIcon className="fill-current" />}
-                {isSearching && (
-                  <div className="flex items-center justify-center gap-[2px]">
-                    <div className="w-2 aspect-square bg-current rounded-full animate-pulse " />
-                    <div className="w-2 aspect-square bg-current rounded-full animate-pulse delay-200" />
-                    <div className="w-2 aspect-square bg-current rounded-full animate-pulse delay-400" />
-                  </div>
-                )}
-              </button>
-            </div>
+            {currentPage === 'home' && (
+              <div className="relative min-w-[1.5rem] min-h-[1.5rem]">
+                <AnimatePresence mode="wait">
+                  {isSearchActive && (
+                    <motion.input
+                      initial={{ width: 0 }}
+                      animate={{ width: '10rem' }}
+                      exit={{ width: 0 }}
+                      transition={{ duration: 0.05, type: 'tween' }}
+                      key="search-input"
+                      placeholder="Search"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="off"
+                      onChange={e => search(e.target.value)}
+                      className="relative pl-8 bg-gray-100 text-gray-500 rounded-full px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-opacity-50"
+                    />
+                  )}
+                </AnimatePresence>
+                <button
+                  onClick={() => setIsSearchActive(!isSearchActive)}
+                  disabled={isSearchActive}
+                  className={`absolute ${isSearchActive ? 'left-1' : 'left-0'} top-1/2 -translate-y-1/2 text-gray-500 w-6 p-1 rounded-full hover:bg-gray-200 aspect-square transition-all duration-200 ease-in-out disabled:hover:bg-inherit`}
+                >
+                  {!isSearching && <SearchIcon className="fill-current" />}
+                  {isSearching && (
+                    <div className="flex items-center justify-center gap-[2px]">
+                      <div className="w-2 aspect-square bg-current rounded-full animate-pulse " />
+                      <div className="w-2 aspect-square bg-current rounded-full animate-pulse delay-200" />
+                      <div className="w-2 aspect-square bg-current rounded-full animate-pulse delay-400" />
+                    </div>
+                  )}
+                </button>
+              </div>
+            )}
             {user?.role === 'CUSTOMER' && (
               <Link
                 href="/cart"
@@ -117,7 +119,7 @@ const Nav = ({ currentPage, search, isSearching }: NavProps) => {
                 <CartIcon className="fill-current" />
               </Link>
             )}
-            {user ? (
+            {user && !userError ? (
               <div className="relative group">
                 <div className="text-gray-500 w-7 p-1.5 rounded-full aspect-square transition-all duration-200 ease-in-out">
                   <PersonIcon className="fill-current" />
@@ -138,13 +140,7 @@ const Nav = ({ currentPage, search, isSearching }: NavProps) => {
                     </Link>
                     <Link
                       className="w-full px-4 text-sm py-2 hover:bg-gray-100"
-                      href="/reviews"
-                    >
-                      Reviews
-                    </Link>
-                    <Link
-                      className="w-full px-4 text-sm py-2 hover:bg-gray-100"
-                      href="/signout"
+                      href="/logout"
                     >
                       Sign Out
                     </Link>

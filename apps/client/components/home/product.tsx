@@ -6,10 +6,13 @@ import ChevronForwardIcon from '@icons/chevron-forward.svg'
 import AddCircleIcon from '@icons/add-circle.svg'
 import ReloadCircleIcon from '@icons/reload-circle.svg'
 import useUser from '@hooks/use-user'
+import StarIcon from '@icons/star.svg'
+import { useState } from 'react'
 
 const Product = ({ product }: any) => {
   const { user } = useUser()
   const queryClient = useQueryClient()
+  const [hoveredStar, setHoveredStar] = useState(-1)
 
   const addToCart = useMutation({
     mutationKey: 'addToCart',
@@ -35,6 +38,31 @@ const Product = ({ product }: any) => {
     }
   }
 
+  const ratingMutation = useMutation({
+      mutationKey: 'rating',
+      mutationFn: (rating: any) => api.post(`${API_URL}/user/customer/review`, rating),
+      onSuccess: async () => {
+        await queryClient.invalidateQueries('products')
+        toast.success('Rating added successfully')
+      },
+      onError: (e: any) => {
+        const data = e.response.data
+        toast.error(data.error ?? data.message)
+      },
+    },
+  )
+
+  const handleRating = (rating: number) => {
+    if (ratingMutation.isLoading) return toast.error('Please wait, rating is being added', {
+      icon: '⏳',
+    })
+    if (user) {
+      ratingMutation.mutate({ productId: product.id, rating })
+    } else {
+      toast.error('Please login to rate')
+    }
+  }
+
   return (
     <div
       key={product.id}
@@ -52,6 +80,21 @@ const Product = ({ product }: any) => {
         <p className="text-gray-600 text-sm font-medium">
           {product.price} EGP
         </p>
+        <div className="flex gap-3">
+          <div className="flex gap-1" onMouseLeave={() => setHoveredStar(-1)}>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <StarIcon
+                onClick={() => handleRating(i + 1)}
+                key={i}
+                onMouseEnter={() => setHoveredStar(i)}
+                className={`cursor-pointer w-4 aspect-square ${ratingMutation.isLoading ? 'animate-pulse' : ''} transition-all duration-300 ease-in-out ${hoveredStar !== -1 && hoveredStar < i ? 'opacity-50' : 'opacity-100'} ${i + 1 <= Math.round(product.rating?.average) ? `${product.rating?.ids?.includes(user?.id ?? '') ? 'fill-yellow-600' : 'fill-yellow-500'}` : 'fill-gray-600/50'}`}
+              />
+            ))}
+          </div>
+          <span className="text-gray-600 text-xs">
+            {product.rating?.count ? `${parseFloat(product.rating?.average ?? 0).toFixed(2)} - ${product.rating.count} Rating${`${product.rating.count > 1 ? 's' : ''}`}` : 'No ratings'}
+          </span>
+        </div>
       </div>
       <button
         disabled={addToCart.isLoading}

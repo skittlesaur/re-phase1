@@ -1,8 +1,4 @@
 import { Request, Response } from 'express'
-import User from '../../types/users/user'
-import userFactory from '../../factories/user-factory'
-import UserRole from '../../types/users/user-role'
-import UserFactory from '../../factories/user-factory'
 import UserHelper from '../../types/users/helper'
 
 const login = async (req: Request, res: Response) => {
@@ -17,12 +13,15 @@ const login = async (req: Request, res: Response) => {
 
     const user = await UserHelper.login(email, password)
 
-    const token = user.generateToken()
+    const token = UserHelper.generateToken(user.id)
 
-    res.cookie('token', token, { httpOnly: true })
+    res.cookie('token', token, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      domain: process.env.COOKIE_DOMAIN,
+    })
 
-    const { password: _, ...userWithoutPassword } = user
-    res.status(200).json(userWithoutPassword)
+    res.status(200).json({ authenticated: true })
   } catch (e: any) {
     res.status(400).json({ error: e.message })
   }

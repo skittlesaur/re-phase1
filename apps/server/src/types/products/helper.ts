@@ -14,42 +14,62 @@ class ProductHelper {
       where: {
         id,
       },
+      include: {
+        Review: {
+          select: {
+            customerId: true,
+            rating: true,
+          },
+        },
+      },
     })
 
     if (!product)
       throw new Error('Product not found')
 
-    let productInstance: Product | undefined
+    let productInstance: any
+    const productAny = product as any
+    const ratingsSum = product.Review.reduce((acc, review) => acc + review.rating, 0)
+    const ratingsCount = product.Review.length
+    const averageRating = ratingsSum / ratingsCount
+    const rating = {
+      average: averageRating,
+      count: ratingsCount,
+      ids: product.Review.map(review => review.customerId),
+    }
+
+    delete productAny.Review
 
     if (product.category === ProductCategory.TOOLS) {
       const tool = await prisma.tool.findUnique({
         where: {
-          id,
-        },
-        select: {
-          toolType: true,
+          id: product.id,
         },
       })
 
       if (!tool)
         throw new Error('Tool not found')
 
-      if (tool.toolType === ToolType.HAND_TOOL)
-        productInstance = new HandTool(product.name, product.price, product.stock)
-      else if (tool.toolType === ToolType.POWER_TOOL)
-        productInstance = new PowerTool(product.name, product.price, product.stock)
+      productInstance = {
+        ...productAny,
+        ...tool,
+        rating,
+      }
+    } else if (product.category === ProductCategory.OUTFITS) {
+      // @todo
+    } else if (product.category === ProductCategory.GROCERIES) {
+      const grocery = await prisma.grocery.findUnique({
+        where: {
+          id: product.id,
+        },
+      })
+
+      productInstance = {
+        ...productAny,
+        ...grocery,
+        rating,
+      }
     }
-
-    if (!productInstance)
-      throw new Error('Invalid product category')
-
-    productInstance.id = product.id
-    productInstance.name = product.name
-    productInstance.price = product.price
-    productInstance.category = product.category as ProductCategory
-    productInstance.stock = product.stock
-
-    productInstance = await productInstance.fetchData()
 
     return productInstance
   }
@@ -57,47 +77,76 @@ class ProductHelper {
   static async getProducts() {
     const prisma = new PrismaClient()
 
-    const products = await prisma.product.findMany()
+    const products = await prisma.product.findMany({
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        category: true,
+        stock: true,
+        Review: {
+          select: {
+            customerId: true,
+            rating: true,
+          },
+        },
+      },
+    })
 
-    const productInstances: Product[] = []
+    const productInstances = []
 
-    for (const product of products) {
-      let productInstance: Product | undefined
+    for (let product of products) {
+      const productAny = product as any
+      const ratingsSum = product.Review.reduce((acc, review) => acc + review.rating, 0)
+      const ratingsCount = product.Review.length
+      const averageRating = ratingsSum / ratingsCount
+      const rating = {
+        average: averageRating,
+        count: ratingsCount,
+        ids: product.Review.map(review => review.customerId),
+      }
+
+      delete productAny.Review
 
       if (product.category === ProductCategory.TOOLS) {
         const tool = await prisma.tool.findUnique({
           where: {
             id: product.id,
           },
-          select: {
-            toolType: true,
-          },
         })
 
         if (!tool)
           throw new Error('Tool not found')
 
-        if (tool.toolType === ToolType.HAND_TOOL)
-          productInstance = new HandTool(product.name, product.price, product.stock)
-        else if (tool.toolType === ToolType.POWER_TOOL)
-          productInstance = new PowerTool(product.name, product.price, product.stock)
+        productInstances.push({
+          ...productAny,
+          ...tool,
+          rating,
+        })
+      } else if (product.category === ProductCategory.OUTFITS) {
+        // @todo
+        // const outfit = await prisma.outfit.findUnique({
+        //   where: {
+        //     id: product.id,
+        //   },
+        // })
+        // productInstances.push({
+        //   ...productAny,
+        //   ...outfit,
+        // })
+      } else if (product.category === ProductCategory.GROCERIES) {
+        const grocery = await prisma.grocery.findUnique({
+          where: {
+            id: product.id,
+          },
+        })
+
+        productInstances.push({
+          ...productAny,
+          ...grocery,
+          rating,
+        })
       }
-
-      if (!productInstance)
-        throw new Error('Invalid product category')
-
-      productInstance.id = product.id
-      productInstance.name = product.name
-      productInstance.price = product.price
-      productInstance.category = product.category as ProductCategory
-      productInstance.stock = product.stock
-
-      productInstance = await productInstance.fetchData()
-
-      if (!productInstance)
-        throw new Error('Invalid product category')
-
-      productInstances.push(productInstance)
     }
 
     return productInstances
@@ -106,7 +155,7 @@ class ProductHelper {
   static async search(query: string) {
     const prisma = new PrismaClient()
 
-    const products = await prisma.product.findMany()
+    const products = await this.getProducts()
 
     const fuse = new Fuse(products, {
       keys: [
@@ -131,50 +180,7 @@ class ProductHelper {
 
     const results = fuse.search(query)
 
-    const productInstances: Product[] = []
-
-    for (const result of results) {
-      const product = result.item as any
-
-      let productInstance: Product | undefined
-
-      if (product.category === ProductCategory.TOOLS) {
-        const tool = await prisma.tool.findUnique({
-          where: {
-            id: product.id,
-          },
-          select: {
-            toolType: true,
-          },
-        })
-
-        if (!tool)
-          throw new Error('Tool not found')
-
-        if (tool.toolType === ToolType.HAND_TOOL)
-          productInstance = new HandTool(product.name, product.price, product.stock)
-        else if (tool.toolType === ToolType.POWER_TOOL)
-          productInstance = new PowerTool(product.name, product.price, product.stock)
-      }
-
-      if (!productInstance)
-        throw new Error('Invalid product category')
-
-      productInstance.id = product.id
-      productInstance.name = product.name
-      productInstance.price = product.price
-      productInstance.category = product.category as ProductCategory
-      productInstance.stock = product.stock
-
-      productInstance = await productInstance.fetchData()
-
-      if (!productInstance)
-        throw new Error('Invalid product category')
-
-      productInstances.push(productInstance)
-    }
-
-    return productInstances
+    return results.map(result => result.item)
   }
 }
 

@@ -3,8 +3,8 @@ import Nav from '@components/nav'
 
 interface AppProps {
   children: ReactNode
-  currentPage: 'home' | 'contact'
-  search: (query: string) => void
+  currentPage?: 'home' | 'contact' | 'other'
+  search?: (query: string) => void
   isSearching?: boolean
 }
 

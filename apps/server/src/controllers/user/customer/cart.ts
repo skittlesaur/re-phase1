@@ -1,11 +1,10 @@
 import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
-import User from '../../../types/users/user'
 import Customer from '../../../types/users/customer'
 
-const getUser = async (req: Request, res: Response) => {
+const getUser = async (req: any, res: Response) => {
   try {
-    const user = req.user as Customer
+    const user = req?.user as Customer
     if (!user) throw new Error('User not found')
 
     let userDetails: any = user
@@ -20,9 +19,9 @@ const getUser = async (req: Request, res: Response) => {
         cartItems: {
           include: {
             product: true,
-          }
-        }
-      }
+          },
+        },
+      },
     })
 
     res.status(200).json(cart)

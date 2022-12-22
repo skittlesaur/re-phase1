@@ -7,7 +7,7 @@ import Customer from './customer'
 abstract class User {
   id: string
   email: string
-  #password?: string
+  password?: string
   name?: string
   role: UserRole
 
@@ -18,16 +18,54 @@ abstract class User {
     this.role = role
 
     if (password)
-      this.#password = bcrypt.hashSync(password, 10)
+      this.password = bcrypt.hashSync(password, 10)
   }
 
   abstract fetchData(): Promise<any>
+
   abstract create(): Promise<any>
 
-  generateToken(): string {
-    return jwt.sign({ id: this.id }, process.env.JWT_SECRET ?? '', {
-      expiresIn: '1d',
+  async updateProfile(name: string, email: string, oldPassword: string, newPassword: string): Promise<any> {
+    const prisma = new PrismaClient()
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: this.id,
+      },
     })
+
+    if (!user)
+      throw new Error('User not found')
+
+    const updates: any = {}
+
+    if (oldPassword && newPassword) {
+      if (!bcrypt.compareSync(oldPassword, user.password))
+        throw new Error('Invalid password')
+      else
+        updates.password = await bcrypt.hash(newPassword, 10)
+    }
+
+    if (name)
+      updates.name = name
+
+    if (email)
+      updates.email = email
+
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: this.id,
+      },
+      data: updates,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+      },
+    })
+
+    return updatedUser
   }
 }
 
