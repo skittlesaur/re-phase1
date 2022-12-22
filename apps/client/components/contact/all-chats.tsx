@@ -3,10 +3,13 @@ import Loader from "@components/loader";
 import { Mutation, useMutation, useQueryClient } from "react-query";
 import api from "@lib/api";
 import toast from "react-hot-toast";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 const AllChats = ({ user }: any) => {
   const { complaints, isLoading } = useComplaints(user.role);
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const mutation = useMutation({
     mutationKey: "complain",
@@ -31,25 +34,22 @@ const AllChats = ({ user }: any) => {
     mutation.mutate({ title, text });
   };
 
-  const clickHandler = () => {
-    console.log("ok");
-  };
-
   return (
     <div>
-      {complaints.map((complain: any) => {
+      {complaints.map((complaint: any) => {
         return (
-          <button onClick={clickHandler}>
+          <Link href={`/contact/${complaint.id}`}>
             <div>
-              <h1>{complain.title}</h1>
+              <h1>{complaint.title}</h1>
               <br />
-              <h1>Date issued: {complain.date}</h1>
+              <h1>Date issued: {complaint.date}</h1>
               <br />
               <h1>
-                Status: {complain.status === false ? "not solved" : "solved ;)"}
+                Status:{" "}
+                {complaint.status === false ? "not solved" : "solved ;)"}
               </h1>
             </div>
-          </button>
+          </Link>
         );
       })}
 

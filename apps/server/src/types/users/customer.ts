@@ -220,6 +220,7 @@ class Customer extends User {
         authorId: this.id,
       },
       select: {
+        id: true,
         date: true,
         title: true,
         text: true,
