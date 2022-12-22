@@ -27,6 +27,7 @@ import writeComplaint from './controllers/user/customer/write-complaint'
 import writeReview from './controllers/user/customer/write-review'
 import updateProfile from './controllers/user/update-profile'
 import logout from './controllers/user/logout'
+import purchaseHistory from './controllers/user/customer/history'
 
 dotenv.config()
 const PORT = process.env.PORT
@@ -70,6 +71,7 @@ server.post('/user/customer/purchase', userRole(UserRole.CUSTOMER), purchase)
 server.get('/user/customer/cart', userRole(UserRole.CUSTOMER), cart)
 server.post('/user/customer/cart', userRole(UserRole.CUSTOMER), addCart)
 server.delete('/user/customer/cart', userRole(UserRole.CUSTOMER), removeCart)
+server.get('/user/customer/history', userRole(UserRole.CUSTOMER), purchaseHistory)
 server.get('/user/customer/complaint', userRole(UserRole.CUSTOMER), viewComplaint)
 server.post('/user/customer/reply', userRole(UserRole.CUSTOMER), reply)
 server.get('/user/customer/myComplaints', userRole(UserRole.CUSTOMER), viewOwnComplaints)

@@ -72,8 +72,33 @@ class UserHelper {
   }
 
   static async authenticate(token: string): Promise<any> {
-    const { id } = this.verifyToken(token) as any
-    const user = this.getUser(id)
+    const { id } = await this.verifyToken(token) as any
+    const prisma = new PrismaClient()
+
+    let user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!user)
+      throw new Error('User not found')
+
+    if (user.role === UserRole.CUSTOMER) {
+      const customer = new Customer(user.email)
+      customer.id = user.id
+      customer.name = user.name ?? undefined
+      customer.role = user.role
+      user = await customer.fetchData()
+    } else if (user.role === UserRole.CUSTOMER_SERVICE) {
+      const customerService = new CustomerService(user.email)
+      customerService.id = user.id
+      customerService.name = user.name ?? undefined
+      customerService.role = user.role
+      user = await customerService.fetchData()
+    }
+    // @todo product seller
+
     return user
   }
 
