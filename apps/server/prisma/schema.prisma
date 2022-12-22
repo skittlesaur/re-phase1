@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,17 +11,21 @@ datasource db {
 }
 
 model Product {
-  id       String          @id @default(cuid()) @map("_id")
-  name     String
-  price    Float
-  stock    Int
-  category ProductCategory
-  Cart     Cart?           @relation(fields: [cartId], references: [id])
-  cartId   String?
-  Review   Review[]
-  CartItem CartItem[]
-  Tool     Tool[]
-  Grocery  Grocery[]
+  id              String          @id @default(cuid()) @map("_id")
+  name            String
+  price           Float
+  stock           Int
+  category        ProductCategory
+  Cart            Cart?           @relation(fields: [cartId], references: [id])
+  cartId          String?
+  Review          Review[]
+  CartItem        CartItem[]
+  Tool            Tool?
+  Grocery         Grocery?
+  Outfits         Outfits?
+  createdAt       DateTime        @default(now())
+  productSeller   ProductSeller   @relation(fields: [productSellerId], references: [id])
+  productSellerId String
 }
 
 model Tool {
@@ -28,14 +35,14 @@ model Tool {
 }
 
 model Grocery {
-  id             String      @id @default(cuid()) @map("_id")
-  product        Product     @relation(fields: [id], references: [id])
-  groceryType    GroceryType
-  expirationDate DateTime
+  id          String      @id @default(cuid()) @map("_id")
+  product     Product     @relation(fields: [id], references: [id])
+  groceryType GroceryType
 }
 
 model Outfits {
   id         String     @id @default(cuid()) @map("_id")
+  product    Product    @relation(fields: [id], references: [id])
   outfitType OutfitType
 }
 
@@ -48,7 +55,7 @@ model User {
   customer        Customer?
   customerService CustomerService?
   productSeller   ProductSeller?
-  complaints      Complaint[]
+  Complaint       Complaint[]
   Reply           Reply[]
 }
 
@@ -63,9 +70,9 @@ model Customer {
 }
 
 model ProductSeller {
-  id       String          @id @default(cuid()) @map("_id")
-  user     User            @relation(fields: [id], references: [id])
-  category ProductCategory
+  id       String    @id @default(cuid()) @map("_id")
+  user     User      @relation(fields: [id], references: [id])
+  products Product[]
 }
 
 model CustomerService {
@@ -75,16 +82,16 @@ model CustomerService {
 }
 
 model Complaint {
-  id       String   @id @default(cuid()) @map("_id")
-  title    String
-  text     String
-  date     DateTime @default(now())
-  status   Boolean // if it's resolved or not (can only be changed by the cutomer service) could be enum
-  author   Customer @relation(fields: [authorId], references: [id]) // customer tht wrote the complaint
-  authorId String
-  replies  Reply[]
-  User     User?    @relation(fields: [userId], references: [id])
-  userId   String?
+  id         String    @id @default(cuid()) @map("_id")
+  title      String
+  text       String
+  date       DateTime  @default(now())
+  status     Boolean // if it's resolved or not (can only be changed by the cutomer service) could be enum
+  author     User      @relation(fields: [authorId], references: [id]) // customer tht wrote the complaint
+  authorId   String
+  replies    Reply[]
+  Customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?
 }
 
 model Reply {
@@ -95,9 +102,9 @@ model Reply {
   authorId          String
   complaint         Complaint        @relation(fields: [complaintId], references: [id])
   complaintId       String
-  customer          Customer?        @relation(fields: [customerId], references: [id])
+  Customer          Customer?        @relation(fields: [customerId], references: [id])
   customerId        String?
-  customerService   CustomerService? @relation(fields: [customerServiceId], references: [id])
+  CustomerService   CustomerService? @relation(fields: [customerServiceId], references: [id])
   customerServiceId String?
 }
 
@@ -161,7 +168,7 @@ enum GroceryType {
 }
 
 enum UserRole {
-  PRODUCTS_SELLLER
+  PRODUCTS_SELLER
   CUSTOMER_SERVICE
   CUSTOMER
 }
