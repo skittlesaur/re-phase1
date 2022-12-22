@@ -14,6 +14,7 @@ class CustomerService extends User {
 
     const complaints = await prisma.complaint.findMany({
       select: {
+        id: true,
         date: true,
         title: true,
         status: true,
@@ -69,9 +70,10 @@ class CustomerService extends User {
                 name: true,
               },
             },
+            customerId: true,
           },
           orderBy: {
-            date: 'desc'
+            date: 'asc'
           },
         },
       },

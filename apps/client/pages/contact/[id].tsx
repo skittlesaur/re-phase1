@@ -2,19 +2,21 @@ import api from "@lib/api";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { useMutation, useQuery, useQueryClient, Mutation } from "react-query";
-import { useEffect, useState } from "react";
 import Loader from "@components/loader";
+import useUser from "@hooks/use-user";
 
 const Complaint = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { user } = useUser();
 
   const { id } = router.query;
 
   const query = useQuery({
     queryKey: "complaint",
     queryFn: () => api.get(`/user/complaint/${id}`).then((res) => res.data),
-    enabled: !!id,
+    enabled: !!id && !!user,
+    onError: (e: any) => console.log(e.message),
   });
 
   const mutation = useMutation({
@@ -65,8 +67,12 @@ const Complaint = () => {
           <br />
           <h1>Date: {complaint.date}</h1>
           <br />
+
           <h1>Status: {complaint.status ? "Solved" : "Unsolved"}</h1>
           <br />
+          {user.role === "CUSTOMER_SERVICE" && <button> change status </button>}
+          <br />
+
           {complaint.author.user.name && (
             <h1>Name: {complaint.author.user.name}</h1>
           )}
@@ -78,7 +84,7 @@ const Complaint = () => {
           <h1>
             replies:
             {complaint.replies.map((reply: any) => {
-              if (!reply.customerId) {
+              if (reply.customerId) {
                 return (
                   <p>
                     this is a customer: {reply.text}
