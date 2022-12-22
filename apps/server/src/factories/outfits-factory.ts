@@ -1,9 +1,9 @@
-import Outfits from '../types/outfits/outfits'
-import OutfitType from '../types/outfits/outfit-type'
-import SummerOutfits from '../types/outfits/summer-outfits'
-import WinterOutfits from '../types/outfits/winter-outfits'
+import Outfits from '../types/products/outfits/outfit'
+import OutfitType from '../types/products/outfits/outfit-type'
+import SummerOutfits from '../types/products/outfits/summer-outfits'
+import WinterOutfits from '../types/products/outfits/winter-outfits'
 import IFactory from './ifactory'
-import Product from '../types/product'
+import Product from '../types/products/product'
 
 interface OutfitProperties{
     name: string
