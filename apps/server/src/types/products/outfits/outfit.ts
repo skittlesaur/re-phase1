@@ -34,6 +34,8 @@ abstract class Outfits extends Product {
       },
     })
 
+    console.log(product)
+
     return product
   }
 
