@@ -140,12 +140,6 @@ const Nav = ({ currentPage = 'other', search = () => {}, isSearching = false }: 
                     </Link>
                     <Link
                       className="w-full px-4 text-sm py-2 hover:bg-gray-100"
-                      href="/reviews"
-                    >
-                      Reviews
-                    </Link>
-                    <Link
-                      className="w-full px-4 text-sm py-2 hover:bg-gray-100"
                       href="/logout"
                     >
                       Sign Out

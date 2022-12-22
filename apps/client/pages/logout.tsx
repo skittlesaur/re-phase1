@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from 'react-query'
 import api from '@lib/api'
 import { useEffect } from 'react'
 import useUser from '@hooks/use-user'
+import SEO from 'ui/seo'
 
 const Logout = () => {
   const queryClient = useQueryClient()
@@ -34,6 +35,7 @@ const Logout = () => {
 
   return (
     <div className="w-full h-screen flex items-center justify-center">
+      <SEO title="Logout" />
       <Loader />
     </div>
   )
