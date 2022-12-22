@@ -6,8 +6,8 @@ import { PrismaClient } from '@prisma/client'
 abstract class Tool extends Product {
   toolType: ToolType
 
-  constructor(name: string, price: number, stock: number, toolType: ToolType) {
-    super(name, price, ProductCategory.TOOLS, stock)
+  constructor(sellerId: string, name: string, price: number, stock: number, toolType: ToolType) {
+    super(sellerId, name, price, ProductCategory.TOOLS, stock)
     this.toolType = toolType
   }
 
@@ -28,6 +28,7 @@ abstract class Tool extends Product {
         price: this.price,
         category: this.category,
         stock: this.stock,
+        productSellerId: this.sellerId,
       },
     })
 

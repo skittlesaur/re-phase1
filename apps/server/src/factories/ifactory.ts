@@ -1,7 +1,7 @@
 import Product from '../types/products/product'
 
 interface IFactory {
-  create(type: string, props: any): any;
+  create(sellerId: string, type: string, name: string, price: number, stock: number, ...args: any): any;
 }
 
 export default IFactory

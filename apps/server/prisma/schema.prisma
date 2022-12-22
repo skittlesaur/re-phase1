@@ -1,7 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,17 +11,21 @@ datasource db {
 }
 
 model Product {
-  id       String          @id @default(cuid()) @map("_id")
-  name     String
-  price    Float
-  stock    Int
-  category ProductCategory
-  Cart     Cart?           @relation(fields: [cartId], references: [id])
-  cartId   String?
-  Review   Review[]
-  CartItem CartItem[]
-  Tool     Tool[]
-  Grocery  Grocery[]
+  id              String          @id @default(cuid()) @map("_id")
+  name            String
+  price           Float
+  stock           Int
+  category        ProductCategory
+  Cart            Cart?           @relation(fields: [cartId], references: [id])
+  cartId          String?
+  Review          Review[]
+  CartItem        CartItem[]
+  Tool            Tool?
+  Grocery         Grocery?
+  Outfits         Outfits?
+  createdAt       DateTime        @default(now())
+  productSeller         ProductSeller   @relation(fields: [productSellerId], references: [id])
+  productSellerId String
 }
 
 model Tool {
@@ -35,13 +38,12 @@ model Grocery {
   id             String      @id @default(cuid()) @map("_id")
   product        Product     @relation(fields: [id], references: [id])
   groceryType    GroceryType
-  expirationDate DateTime
 }
 
-model Outfits{
-  id     String     @id @default(cuid()) @map("_id")
+model Outfits {
+  id         String     @id @default(cuid()) @map("_id")
+  product    Product    @relation(fields: [id], references: [id])
   outfitType OutfitType
-  
 }
 
 model User {
@@ -52,7 +54,7 @@ model User {
   role            UserRole
   customer        Customer?
   customerService CustomerService?
-  productSeller  ProductSeller?
+  productSeller   ProductSeller?
   Complaint       Complaint[]
   Reply           Reply[]
 }
@@ -67,10 +69,10 @@ model Customer {
   replies         Reply[]
 }
 
-model ProductSeller{
-  id              String            @id @default(cuid()) @map("_id")
-  user            User              @relation(fields: [id], references: [id])
-  category        ProductCategory
+model ProductSeller {
+  id      String    @id @default(cuid()) @map("_id")
+  user    User      @relation(fields: [id], references: [id])
+  products Product[]
 }
 
 model CustomerService {
@@ -166,12 +168,12 @@ enum GroceryType {
 }
 
 enum UserRole {
-  PRODUCTS_SELLLER
+  PRODUCTS_SELLER
   CUSTOMER_SERVICE
   CUSTOMER
 }
 
 enum OutfitType {
-  WINTER_OUTFITS 
-  SUMMER_OUTFITS 
+  WINTER_OUTFITS
+  SUMMER_OUTFITS
 }

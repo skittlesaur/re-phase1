@@ -3,7 +3,6 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import * as bodyParser from 'body-parser'
 import dotenv from 'dotenv'
-import createProduct from './controllers/products/create'
 import login from './controllers/user/login'
 import register from './controllers/user/register'
 import authenticatedUserMiddleware from './middleware/authenticated-user'
@@ -32,6 +31,8 @@ import { PrismaClient } from '@prisma/client'
 import ProductCategory from './types/products/product-category'
 import ToolType from './types/products/tools/tool-type'
 import bcrypt from 'bcrypt'
+import viewProductInsights from './controllers/user/products-seller/product-insights'
+import addProduct from './controllers/user/products-seller/add-product'
 
 dotenv.config()
 const PORT = process.env.PORT
@@ -59,7 +60,6 @@ server.get('/', (req: Request, res: Response) => {
 })
 
 server.get('/products', getAllProducts)
-server.post('/products', createProduct)
 server.post('/products/search', searchProducts)
 
 server.post('/user/login', login)
@@ -88,68 +88,12 @@ server.put('/user/customer-service/status', userRole(UserRole.CUSTOMER_SERVICE),
 server.get('/user/customer-service/complaint', userRole(UserRole.CUSTOMER_SERVICE), viewComplaint)
 server.post('/user/customer-service/reply', userRole(UserRole.CUSTOMER_SERVICE), reply)
 
+// Authenticated Seller
+server.get('/user/seller/products', userRole(UserRole.PRODUCTS_SELLER), viewProductInsights)
+server.post('/user/seller/products', userRole(UserRole.PRODUCTS_SELLER), addProduct)
 
 server.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`)
 })
 
-const generateData = async () => {
-  const prisma = new PrismaClient()
-
-  await prisma.customer.create({
-    data: {
-      user: {
-        create: {
-          email: 'customer@dev.dev',
-          password: await bcrypt.hash('12341234', 10),
-          role: UserRole.CUSTOMER,
-        },
-      },
-    },
-  })
-
-  await prisma.customerService.create({
-    data: {
-      user: {
-        create: {
-          email: 'cs@dev.dev',
-          password: await bcrypt.hash('12341234', 10),
-          role: UserRole.CUSTOMER_SERVICE,
-        },
-      },
-    },
-  })
-
-  await prisma.tool.create({
-    data: {
-      toolType: ToolType.HAND_TOOL,
-      product: {
-        create: {
-          name: 'Hammer',
-          price: 100,
-          stock: 10,
-          category: ProductCategory.TOOLS,
-        },
-      },
-    },
-  })
-
-  await prisma.tool.create({
-    data: {
-      toolType: ToolType.POWER_TOOL,
-      product: {
-        create: {
-          name: 'Drill',
-          price: 100,
-          stock: 10,
-          category: ProductCategory.TOOLS,
-        },
-      },
-    },
-  })
-
-  console.log('completed')
-}
-
-// generateData()
 export default server
