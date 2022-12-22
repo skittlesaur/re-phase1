@@ -18,7 +18,7 @@ const login = async (req: Request, res: Response) => {
     res.cookie('token', token, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
-      domain: process.env.CLIENT_URL,
+      domain: process.env.COOKIE_DOMAIN,
     })
 
     const { password: _, ...userWithoutPassword } = user
