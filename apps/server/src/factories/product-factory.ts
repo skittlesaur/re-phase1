@@ -1,6 +1,7 @@
 import ProductCategory from '../types/products/product-category'
 import GroceryFactory from './grocery-factory'
 import IFactory from './ifactory'
+import OutfitsFactory from './outfits-factory'
 import ToolFactory from './tool-factory'
 
 const getFactory = (type: ProductCategory): IFactory => {
@@ -9,6 +10,8 @@ const getFactory = (type: ProductCategory): IFactory => {
       return new ToolFactory()
     case ProductCategory.GROCERIES:
       return new GroceryFactory()
+    case ProductCategory.OUTFITS:
+      return new OutfitsFactory()
     default:
       throw new Error('Invalid type')
   }
