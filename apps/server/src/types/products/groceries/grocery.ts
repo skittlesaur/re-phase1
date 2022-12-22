@@ -1,5 +1,5 @@
 import Product from '../product'
-import GroceryType from './grocery-type'
+import GroceryType from './grocery-type';
 import ProductCategory from '../product-category'
 import { PrismaClient } from '@prisma/client'
 
@@ -32,6 +32,25 @@ abstract class Grocery extends Product {
     })
 
     return product
+  }
+
+
+  async fetchData(): Promise<any> {
+    const prisma = new PrismaClient()
+
+    const grocery = await prisma.grocery.findUnique({
+      where: {
+        id: this.id,
+      },
+      select: {
+        groceryType: true
+      },
+    })
+
+    if (!grocery)
+      throw new Error('User is not a customer')
+
+    return this
   }
 }
 

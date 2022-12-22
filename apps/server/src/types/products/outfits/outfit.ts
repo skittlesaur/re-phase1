@@ -36,6 +36,24 @@ abstract class Outfits extends Product {
 
     return product
   }
+
+  async fetchData(): Promise<any> {
+    const prisma = new PrismaClient()
+
+    const outfit = await prisma.outfits.findUnique({
+      where: {
+        id: this.id,
+      },
+      select: {
+        outfitType: true
+      },
+    })
+
+    if (!outfit)
+      throw new Error('User is not a customer')
+
+    return this
+  }
 }
 
 export default Outfits
