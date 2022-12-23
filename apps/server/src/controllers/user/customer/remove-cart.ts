@@ -5,8 +5,8 @@ import Customer from '../../../types/users/customer'
 const removeCart = async (req: Request, res: Response) => {
   try {
     const user = req?.user as Customer
-    const { productId, quantity: qt } = req.body
-    const quantity = qt ?? 1
+    const { productId } = req.params
+    const quantity = 1
 
     if (!productId)
       throw new Error('Product ID is required')

@@ -5,15 +5,14 @@ import Customer from '../../../types/users/customer'
 const getUser = async (req: any, res: Response) => {
   try {
     const user = req?.user as Customer
-    if (!user) throw new Error('User not found')
-
-    let userDetails: any = user
 
     const prisma = new PrismaClient()
 
+    if (!user?.cart?.id) throw new Error('Cart not found')
+
     const cart = await prisma.cart.findUnique({
       where: {
-        id: user?.cart?.id,
+        id: user.cart.id,
       },
       include: {
         cartItems: {
@@ -26,7 +25,7 @@ const getUser = async (req: any, res: Response) => {
 
     res.status(200).json(cart)
   } catch (e: any) {
-    res.status(500).json({ error: e.message })
+    res.status(400).json({ error: e.message })
   }
 }
 

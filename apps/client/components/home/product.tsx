@@ -17,9 +17,9 @@ const Product = ({ product }: any) => {
   const addToCart = useMutation({
     mutationKey: 'addToCart',
     mutationFn: (productId: string) => api.post(`${API_URL}/user/customer/cart`, { productId }),
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries('cart')
       toast.success('Added to cart')
-      queryClient.invalidateQueries('cart')
     },
     onError: (e: any) => {
       const data = e.response.data
