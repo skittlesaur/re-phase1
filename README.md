@@ -1,5 +1,5 @@
 ## Team: 
 
-Baraa Ahmed
-Jana Elkasaby
-Youssef Saad
+- Baraa Ahmed
+- Jana Elkasaby
+- Youssef Saad
