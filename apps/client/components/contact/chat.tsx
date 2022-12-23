@@ -110,7 +110,7 @@ const Chat = () => {
           <h1 className="text-2xl font-medium">{complaint.title}</h1>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-500 uppercase">
-              {complaint.status ? 'Unsolved' : 'Solved'}
+              {complaint.status ? 'Solved' : 'Unsolved'}
             </span>
           </div>
         </div>
