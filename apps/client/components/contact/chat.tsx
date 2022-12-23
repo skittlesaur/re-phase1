@@ -115,7 +115,7 @@ const Chat = () => {
           </div>
         </div>
         <div className="flex flex-col gap-4">
-          <div className="max-h-[70vh] flex flex-col gap-4 px-4 border border-gray-200 rounded-lg">
+          <div className="h-[70vh] max-h-[70vh] flex flex-col gap-4 px-4 border border-gray-200 rounded-lg">
             <div className="scrollbar-hide grow overflow-y-auto flex flex-col gap-4 py-4">
               <div className={`flex gap-5 items-center ${complaint.author.user.id === user.id ? 'flex-row-reverse' : 'flex-row'}`}>
                 <p className={`bubble ${complaint.author.user.id === user.id ? 'mine' : 'yours'}`}>
