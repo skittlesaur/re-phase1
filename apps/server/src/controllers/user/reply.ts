@@ -25,6 +25,7 @@ const reply = async (req: Request, res: Response) => {
         }
 
     } catch (e: any) {
+        console.log(e)
         res.status(400).json({ message: e.message })
     }
 }

@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .bubble {
+        @apply relative rounded-lg py-3 px-6 max-w-[65%] w-fit;
+    }
+
+    .yours {
+        @apply ml-7 bg-gray-200 text-black before:content-[""] before:absolute before:right-[calc(100%-5px)] before:bottom-[2px] before:w-7 before:h-4;
+    }
+
+    .yours:before {
+        border-style: solid;
+        border-width: 1em 1.5em 1em 0;
+        border-color: transparent #E5E5E5;
+    }
+
+    .mine {
+        @apply mr-7 bg-gray-900 text-white before:content-[""] before:absolute before:left-[calc(100%-5px)] before:bottom-[2px] before:w-7 before:h-4;
+    }
+
+    .mine:before {
+        border-style: solid;
+        border-width: 1em 0 1em 1.5em;
+        border-color: transparent #171717;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+}

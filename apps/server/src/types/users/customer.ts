@@ -216,6 +216,7 @@ class Customer extends User {
         id: complaintId,
       },
       select: {
+        id: true,
         title: true,
         text: true,
         date: true,
@@ -224,6 +225,7 @@ class Customer extends User {
           select: {
             user: {
               select: {
+                id: true,
                 email: true,
                 name: true,
               },
@@ -236,6 +238,7 @@ class Customer extends User {
             date: true,
             author: {
               select: {
+                id: true,
                 email: true,
                 name: true,
               },

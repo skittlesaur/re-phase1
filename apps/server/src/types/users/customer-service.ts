@@ -42,6 +42,7 @@ class CustomerService extends User {
         id: complaintId,
       },
       select: {
+        id: true,
         title: true,
         text: true,
         date: true,
@@ -66,7 +67,7 @@ class CustomerService extends User {
                 name: true,
               },
             },
-            customerId: true,
+            customerServiceId: true,
           },
           orderBy: {
             date: 'asc',
