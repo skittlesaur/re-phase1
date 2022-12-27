@@ -16,7 +16,7 @@ const Chat = () => {
   const [reply, setReply] = useState('')
 
   const { data: complaint, isLoading, isError } = useQuery({
-    queryKey: 'complaint',
+    queryKey: ['complaint', id],
     queryFn: () => api.get(`/user/complaint/${id}`).then((res) => res.data),
     enabled: !!id && !!user,
     onError: (e: any) => console.log(e.message),
@@ -84,7 +84,7 @@ const Chat = () => {
       lastMessageRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [complaint])
 
-  if (!complaint || isLoading) return <Loader />
+  if (!complaint || isLoading || complaint.id !== id) return <Loader />
 
   if (isError) {
     router.push('/contact')
