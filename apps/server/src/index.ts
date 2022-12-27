@@ -30,6 +30,7 @@ import viewProductInsights from './controllers/user/products-seller/product-insi
 import addProduct from './controllers/user/products-seller/add-product'
 import editProduct from './controllers/user/products-seller/edit-product'
 import removeProduct from './controllers/user/products-seller/remove-product'
+import purchaseHistory from './controllers/user/customer/history'
 
 dotenv.config()
 const PORT = process.env.PORT
@@ -72,6 +73,7 @@ server.post('/user/customer/purchase', userRole([UserRole.CUSTOMER]), purchase)
 server.get('/user/customer/cart', userRole([UserRole.CUSTOMER]), cart)
 server.post('/user/customer/cart', userRole([UserRole.CUSTOMER]), addCart)
 server.delete('/user/customer/cart/:productId', userRole([UserRole.CUSTOMER]), removeCart)
+server.get('/user/customer/history', userRole([UserRole.CUSTOMER]), purchaseHistory)
 server.get('/user/customer/myComplaints', userRole([UserRole.CUSTOMER]), viewOwnComplaints)
 server.post('/user/customer/writeComplaint', userRole([UserRole.CUSTOMER]), writeComplaint)
 server.post('/user/customer/review', userRole([UserRole.CUSTOMER]), writeReview)

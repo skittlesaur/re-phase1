@@ -15,7 +15,7 @@ const Cart = () => {
     mutationFn: () => api.post(`/user/customer/purchase`),
     onSuccess: async () => {
       toast.success('Checkout successful')
-      router.push('/orders')
+      router.push('/history')
     },
     onError: (e: any) => {
       const data = e.response.data
